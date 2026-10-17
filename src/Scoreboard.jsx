@@ -40,12 +40,12 @@ function SegmentTimer({seconds,total,timerClass}){
 
 function PlayerCard({player,index,active,yellow,avg,onScore,quick}){
  if(!player)return <aside/>;
- return <aside className={`sb-player ${yellow?'yellow':''} ${active?'active':'inactive'}`}>
-  <div className="player-identity"><div className={`ball ${player.ball}`}></div><h2>{player.name}</h2>{!quick&&<em>핸디 {player.handicap}점</em>}</div>
-  <div className="score-adjust wide-adjust"><button disabled={!active} onClick={()=>onScore(index,-1)} aria-label="1점 빼기"><Minus/></button><span>점수 조정</span><button disabled={!active} onClick={()=>onScore(index,1)} aria-label="1점 더하기"><Plus/></button></div>
-  <div className="current-score-box"><small>현재 득점</small><strong className="sb-score tall-score">{player.score}</strong></div>
-  <div className="sb-metrics large-metrics">{!quick&&<span>AVG <b>{avg}</b></span>}<span>HR <b>{player.hr}</b></span>{!quick&&<span>현재 <b>{player.inningPoints}</b></span>}</div>
-  <div className="sb-score-buttons two-buttons"><button disabled={!active} className="plus1" onClick={()=>onScore(index,1)}><Plus/>1점</button><button disabled={!active} className="plus2" onClick={()=>onScore(index,2)}><Plus/>2점</button></div>
+ return <aside className={`sb-player score-layout-v145 ${yellow?'yellow':''} ${active?'active':'inactive'}`}>
+  <div className="player-identity centered-identity"><div className={`ball ${player.ball}`}></div><h2>{player.name}</h2>{!quick&&<em>핸디 {player.handicap}점</em>}</div>
+  <div className="score-adjust wide-adjust no-label"><button disabled={!active} onClick={()=>onScore(index,-1)} aria-label="1점 빼기"><Minus/></button><button disabled={!active} onClick={()=>onScore(index,1)} aria-label="1점 더하기"><Plus/></button></div>
+  <div className="main-score-area"><strong className="sb-score classic-score">{player.score}</strong><div className="turn-score-box"><small>현재 득점</small><b>{player.inningPoints}</b></div></div>
+  <div className="sb-metrics large-metrics">{!quick&&<span>AVG <b>{avg}</b></span>}<span>HR <b>{player.hr}</b></span></div>
+  <div className="sb-score-buttons two-buttons raised-buttons"><button disabled={!active} className="plus1" onClick={()=>onScore(index,1)}><Plus/><span>1점</span></button><button disabled={!active} className="plus2" onClick={()=>onScore(index,2)}><span><Plus/>2점</span><small>뱅크샷</small></button></div>
  </aside>
 }
 
