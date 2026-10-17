@@ -81,3 +81,45 @@
 
 /* QUICK START V1.3 */
 .match-type-grid.single-only{grid-template-columns:1fr}.multi-options.single-option{grid-template-columns:1fr}.quick-guide{margin-top:1vw;padding:.7vw .9vw;border-radius:.65vw;background:rgba(20,126,226,.12);border:1px solid rgba(73,175,255,.28);color:#b9daef;font-size:.76vw}.controls.quick-controls{grid-template-columns:1fr 1fr}.quick-metrics{grid-template-columns:1fr!important}.quick-metrics span{grid-column:1/-1}.multi-play-head p{margin:.25vw 0 0;color:#a9c7dc;font-size:.76vw}.multi-player-panel>div:last-child{grid-template-columns:repeat(3,1fr)}.multi-player-panel button.plus2{background:#f5a623}.multi-controls.no-turn{grid-template-columns:1fr 1fr}.multi-controls.no-turn .danger{grid-column:auto}.multi-score-grid.count-5,.multi-score-grid.count-6{overflow:auto}.choice-left>button:first-child{order:1}.choice-left>button:last-child{order:2}
+
+/* QUICK START V1.3.1 - larger player count and footer actions */
+.game-choice .multi-options.single-option .option-block{
+  min-height:7.6vw;
+  padding:1.15vw 1.1vw;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.game-choice .multi-options.single-option .option-block label{
+  margin-bottom:.85vw;
+  font-size:1vw;
+}
+.game-choice .multi-options.single-option .count-buttons{
+  gap:.7vw;
+}
+.game-choice .multi-options.single-option .count-buttons button{
+  height:3.8vw;
+  min-height:54px;
+  font-size:1.05vw;
+  border-radius:.7vw;
+}
+.game-choice .multi-options.single-option .option-block>small{
+  margin-top:.8vw;
+  font-size:.72vw;
+}
+.game-choice .choice-footer{
+  gap:1vw;
+  padding-top:1.25vw;
+}
+.game-choice .choice-footer button{
+  min-width:12.5vw;
+  height:4.3vw;
+  min-height:62px;
+  padding:0 1.4vw;
+  border-radius:.75vw;
+  font-size:1.02vw;
+}
+.game-choice .choice-footer .primary{
+  min-width:17vw;
+  font-size:1.12vw;
+}
