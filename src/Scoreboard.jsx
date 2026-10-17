@@ -41,13 +41,10 @@ function SegmentTimer({seconds,total,timerClass}){
 function PlayerCard({player,index,active,yellow,avg,onScore,quick}){
  if(!player)return <aside/>;
  return <aside className={`sb-player ${yellow?'yellow':''} ${active?'active':'inactive'}`}>
-  <div className={`ball ${player.ball}`}></div>
-  <small>{quick?`선수 ${index+1}`:index===0?'흰공 · 선공':'노란공 · 후공'}</small>
-  <h2>{player.name}</h2>
-  {!quick&&<em>핸디 {player.handicap}점</em>}
-  <div className="score-adjust"><button disabled={!active} onClick={()=>onScore(index,-1)} aria-label="1점 빼기"><Minus/></button><span>점수 조정</span><button disabled={!active} onClick={()=>onScore(index,1)} aria-label="1점 더하기"><Plus/></button></div>
-  <strong className="sb-score">{player.score}</strong>
-  <div className="sb-metrics">{!quick&&<span>AVG <b>{avg}</b></span>}<span>HR <b>{player.hr}</b></span>{!quick&&<span>현재 <b>{player.inningPoints}</b></span>}</div>
+  <div className="player-identity"><div className={`ball ${player.ball}`}></div><h2>{player.name}</h2>{!quick&&<em>핸디 {player.handicap}점</em>}</div>
+  <div className="score-adjust wide-adjust"><button disabled={!active} onClick={()=>onScore(index,-1)} aria-label="1점 빼기"><Minus/></button><span>점수 조정</span><button disabled={!active} onClick={()=>onScore(index,1)} aria-label="1점 더하기"><Plus/></button></div>
+  <div className="current-score-box"><small>현재 득점</small><strong className="sb-score tall-score">{player.score}</strong></div>
+  <div className="sb-metrics large-metrics">{!quick&&<span>AVG <b>{avg}</b></span>}<span>HR <b>{player.hr}</b></span>{!quick&&<span>현재 <b>{player.inningPoints}</b></span>}</div>
   <div className="sb-score-buttons two-buttons"><button disabled={!active} className="plus1" onClick={()=>onScore(index,1)}><Plus/>1점</button><button disabled={!active} className="plus2" onClick={()=>onScore(index,2)}><Plus/>2점</button></div>
  </aside>
 }
@@ -57,9 +54,12 @@ function InningHistory({events,players,currentInning,quick,scrollRef}){
   const scoreEvents=events.filter(e=>e.type==='score'||(!e.type&&e.playerIndex>=0));
   if(quick)return scoreEvents.map((e,i)=>({key:e.id,inning:i+1,white:e.playerIndex===0?e.points:'',yellow:e.playerIndex===1?e.points:'',name:e.playerName,total:e.total}));
   const map=new Map();
+  events.forEach(e=>{
+   if((e.type==='score'||e.type==='turn'||!e.type)&&Number(e.inning)>0&&!map.has(Number(e.inning)))map.set(Number(e.inning),{inning:Number(e.inning),white:0,yellow:0});
+  });
   scoreEvents.forEach(e=>{
-   if(!map.has(e.inning))map.set(e.inning,{inning:e.inning,white:0,yellow:0});
-   const row=map.get(e.inning);
+   if(!map.has(Number(e.inning)))map.set(Number(e.inning),{inning:Number(e.inning),white:0,yellow:0});
+   const row=map.get(Number(e.inning));
    if(e.playerIndex===0)row.white+=Number(e.points)||0;
    if(e.playerIndex===1)row.yellow+=Number(e.points)||0;
   });
