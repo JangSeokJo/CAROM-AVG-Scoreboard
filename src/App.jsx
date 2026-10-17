@@ -76,7 +76,7 @@ export default function App(){
  const winner=useMemo(()=>game.players.reduce((best,p)=>!best||p.score>best.score?p:best,null),[game.players]);
 
  return <div className="app"><div className="stage">
-  <header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>
+  {screen!=='play'&&<header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>}
   {notice&&<div className="notice">{notice}</div>}
   {screen==='start'&&<section className="start start-centered">
     <div className="hero start-hero">
