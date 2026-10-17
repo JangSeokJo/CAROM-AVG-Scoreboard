@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {createClient} from '@supabase/supabase-js';
-import {Users,UserRound,Play,Save,RotateCcw} from 'lucide-react';
+import {Users,UserRound,Play,Save,RotateCcw,Search,X,UserCheck} from 'lucide-react';
 import Scoreboard from './Scoreboard.jsx';
 import './Scoreboard.css';
 
@@ -22,6 +22,8 @@ export default function App(){
  const [playerCount,setPlayerCount]=useState(3);
  const [timerPreset,setTimerPreset]=useState(40);
  const [customTimer,setCustomTimer]=useState('');
+ const [pickerIndex,setPickerIndex]=useState(null);
+ const [playerSearch,setPlayerSearch]=useState('');
 
  useEffect(()=>{localStorage.setItem('carom-score-live',JSON.stringify(game))},[game]);
  useEffect(()=>{if(screen==='setup') loadPlayers()},[screen]);
@@ -46,7 +48,7 @@ export default function App(){
   setNotice('');
   setScreen(category==='quick'?'play':'setup');
  }
- function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:id,name:p?.name||'',handicap:Number(p?.handicap||0)}:x)}))}
+ function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:id,name:p?.name||'',handicap:Number(p?.handicap||0)}:x)}));setPickerIndex(null);setPlayerSearch('')}
  function start(){if(game.players.some(p=>!p.name)){setNotice('모든 선수를 선택해 주세요.');return}if(new Set(game.players.map(p=>p.playerId)).size!==game.players.length){setNotice('같은 선수를 중복 선택할 수 없습니다.');return}setNotice('');setGame(g=>({...g,status:'playing',currentTurn:0}));setScreen('play')}
  function score(index,points){
   setGame(g=>{
@@ -111,11 +113,18 @@ export default function App(){
     </div>
   </section>}
   {screen==='setup'&&<section className="setup"><div className="section-title"><div><small>GAME SETUP</small><h1>{game.mode==='multi'?`${game.playerCount}명 다인 경기 선수 선택`:'선수와 경기 정보를 설정하세요'}</h1></div><input type="date" value={game.date} onChange={e=>setGame(g=>({...g,date:e.target.value}))}/></div><div className={`player-grid ${game.mode}`}>
-   {game.players.map((p,i)=><article className="player-setup" key={i}><div className={`ball ${p.ball}`}></div><h2>{game.mode==='multi'?`${i+1}번 선수`:i===0?'선공':'후공'}</h2><select value={p.playerId} onChange={e=>setPlayer(i,e.target.value)}><option value="">{loadingPlayers?'선수 불러오는 중...':'선수 선택'}</option>{players.map(x=><option key={x.id} value={x.id}>{x.name} · {x.handicap||0}점</option>)}</select><strong>핸디 {p.handicap||'--'}점</strong></article>)}
+   {game.players.map((p,i)=><article className={`player-setup ${p.playerId?'selected':''}`} key={i}><div className={`ball ${p.ball}`}></div><h2>{game.mode==='multi'?`${i+1}번 선수`:i===0?'선공':'후공'}</h2><button type="button" className="player-picker-button" onClick={()=>{setPickerIndex(i);setPlayerSearch('')}}><UserCheck/><span><small>{loadingPlayers?'선수 불러오는 중...':p.playerId?'선택된 선수':'선수 선택'}</small><b>{p.name||'이름을 검색하여 선택하세요'}</b></span><em>{p.playerId?`${p.handicap||0}점`:'선택'}</em></button><strong>핸디 {p.playerId?(p.handicap||0):'--'}점</strong></article>)}
    </div>{game.category==='record'&&game.mode==='single'&&<div className="timer-setup"><div><b>턴 타이머</b><span>선수 차례마다 적용할 시간을 선택하세요.</span></div><div className="timer-presets">{[30,35,40,45].map(sec=><button key={sec} className={timerPreset===sec?'active':''} onClick={()=>setTimerPreset(sec)}>{sec}초</button>)}<button className={timerPreset==='custom'?'active':''} onClick={()=>setTimerPreset('custom')}>기타 설정</button></div>{timerPreset==='custom'&&<label className="custom-timer"><input type="number" min="5" max="300" value={customTimer} onChange={e=>setCustomTimer(e.target.value)} placeholder="초 입력"/><span>초</span><small>5초부터 300초까지 입력할 수 있습니다.</small></label>}</div>}<div className="setup-footer"><button onClick={()=>setScreen('mode')}>이전</button><button className="primary" onClick={start}>경기 시작</button></div></section>}
   {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onFinish={finish} onExit={()=>{if(window.confirm('진행 중인 경기에서 나가시겠습니까? 경기 내용은 저장됩니다.'))setScreen('start')}} avg={avg}/>}
   {screen==='result'&&<section className="result"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=><article key={i}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span>{p===winner?'1위':game.mode==='single'?'패':'-'}</span><p>{game.mode==='single'?`AVG ${avg(p)} · HR ${p.hr}`:`최종 점수 ${p.score}`}</p></article>)}</div><div className="result-meta"><b>{game.mode==='multi'?`총 ${game.inning}라운드`:`전체 이닝 ${game.inning}`}</b><span>{game.category==='record'?'노란공 패배 시 기록 앱 계산에서 1이닝이 자동 차감됩니다.':'빠른 시작 경기는 기록 앱에 저장되지 않습니다.'}</span></div><div className="setup-footer"><button onClick={()=>setScreen('play')}>경기로 돌아가기</button>{game.category==='record'?<button className="primary" onClick={save}><Save/> 기록 앱에 저장</button>:<button className="primary" onClick={reset}><Play/> 새 경기 시작</button>}</div></section>}
   {screen==='saved'&&<section className="saved"><div className="check">✓</div><h1>경기가 저장되었습니다!</h1><p>CAROM AVG 기록 앱에 경기 결과가 반영되었습니다.</p><button className="primary" onClick={reset}>새 경기 시작</button></section>}
+  {pickerIndex!==null&&<PlayerPicker players={players} selectedIds={game.players.map(p=>String(p.playerId||''))} currentId={String(game.players[pickerIndex]?.playerId||'')} search={playerSearch} onSearch={setPlayerSearch} onSelect={id=>setPlayer(pickerIndex,id)} onClose={()=>{setPickerIndex(null);setPlayerSearch('')}}/>}
  </div></div>
 }
 
+
+function PlayerPicker({players,selectedIds,currentId,search,onSearch,onSelect,onClose}){
+ const keyword=search.trim().toLocaleLowerCase('ko-KR');
+ const filtered=players.filter(p=>!keyword||String(p.name||'').toLocaleLowerCase('ko-KR').includes(keyword)||String(p.nick||'').toLocaleLowerCase('ko-KR').includes(keyword));
+ return <div className="player-picker-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><section className="player-picker-modal" role="dialog" aria-modal="true" aria-label="선수 선택"><header><div><small>PLAYER SELECT</small><h2>선수를 선택하세요</h2></div><button type="button" onClick={onClose} aria-label="닫기"><X/></button></header><label className="player-search"><Search/><input autoFocus value={search} onChange={e=>onSearch(e.target.value)} placeholder="선수 이름 또는 닉네임 검색"/><span>{filtered.length}명</span></label><div className="player-picker-list">{filtered.map(p=>{const id=String(p.id);const used=selectedIds.includes(id)&&id!==currentId;return <button type="button" key={id} disabled={used} className={id===currentId?'current':''} onClick={()=>onSelect(p.id)}><div className="player-avatar">{String(p.name||'?').slice(0,1)}</div><span><b>{p.name}</b>{p.nick&&<small>{p.nick}</small>}</span><em>핸디 {p.handicap||0}점</em>{used&&<i>선택됨</i>}</button>})}{!filtered.length&&<div className="player-empty">검색 결과가 없습니다.</div>}</div><footer><span>선수를 선택하면 팝업이 자동으로 닫힙니다.</span><button type="button" onClick={onClose}>취소</button></footer></section></div>
+}
