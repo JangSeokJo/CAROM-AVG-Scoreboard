@@ -50,7 +50,17 @@ export default function App(){
  return <div className="app"><div className="stage">
   <header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>
   {notice&&<div className="notice">{notice}</div>}
-  {screen==='start'&&<section className="start"><div className="hero"><div className="balls">⚪ 🟡 🔴</div><h1>CAROM AVG SCORE</h1><p>실제 경기의 흐름을 그대로, 쉽고 빠르게.</p></div><div className="start-actions"><button className="primary" onClick={()=>setScreen('mode')}><Play/> 새 경기 시작</button><button disabled={!localStorage.getItem('carom-score-live')} onClick={()=>setScreen('play')}><RotateCcw/> 진행 중 경기 불러오기</button></div></section>}
+  {screen==='start'&&<section className="start start-centered">
+    <div className="hero start-hero">
+      <div className="balls">⚪ 🟡 🔴</div>
+      <h1>CAROM AVG SCORE</h1>
+      <p>실제 경기의 흐름을 그대로, 쉽고 빠르게.</p>
+    </div>
+    <div className="start-actions start-actions-row">
+      <button className="primary" onClick={()=>setScreen('mode')}><Play/> 새 경기 시작</button>
+      <button disabled={!localStorage.getItem('carom-score-live')} onClick={()=>setScreen('play')}><RotateCcw/> 진행 중 경기 불러오기</button>
+    </div>
+  </section>}
   {screen==='mode'&&<section className="center"><h1>경기 방식을 선택하세요</h1><div className="mode-grid"><button className="mode-card" onClick={()=>chooseMode('single')}><UserRound/><b>1 : 1 경기</b><span>두 선수의 일반 3쿠션 경기</span></button><button className="mode-card" onClick={()=>chooseMode('multi')}><Users/><b>다인 경기</b><span>3인 경기 1차 UI</span></button></div></section>}
   {screen==='setup'&&<section className="setup"><div className="section-title"><div><small>GAME SETUP</small><h1>선수와 경기 정보를 설정하세요</h1></div><input type="date" value={game.date} onChange={e=>setGame(g=>({...g,date:e.target.value}))}/></div><div className={`player-grid ${game.mode}`}>
    {game.players.map((p,i)=><article className="player-setup" key={i}><div className={`ball ${p.ball}`}></div><h2>{i===0?'선공':i===1?'후공':`${i+1}번 선수`}</h2><select value={p.playerId} onChange={e=>setPlayer(i,e.target.value)}><option value="">{loadingPlayers?'선수 불러오는 중...':'선수 선택'}</option>{players.map(x=><option key={x.id} value={x.id}>{x.name} · {x.handicap||0}점</option>)}</select><strong>핸디 {p.handicap||'--'}점</strong></article>)}
