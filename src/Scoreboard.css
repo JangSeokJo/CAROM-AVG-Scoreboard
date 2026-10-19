@@ -42,3 +42,9 @@
 .finish-confirm-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:.75vw;margin-top:1.3vw}.finish-confirm-actions button{height:3.5vw;min-height:50px;border:1px solid #8a5960;border-radius:.65vw;background:#351820;color:#fff;font-size:.9vw;font-weight:900}.finish-confirm-actions .finish-confirm-primary{border-color:#ff929b;background:linear-gradient(135deg,#e94b5a,#bd2f3d)}
 .finish-confirm-actions button:active{transform:translateY(2px) scale(.98);filter:brightness(.9)}
 @media(max-width:900px){.finish-confirm-modal{width:88vw;min-width:0;padding:23px 18px 19px;border-radius:16px}.finish-confirm-modal h2{font-size:21px}.finish-confirm-modal p{font-size:13px}.finish-confirm-icon svg{width:31px;height:31px}.finish-confirm-actions{gap:9px;margin-top:17px}.finish-confirm-actions button{height:54px;font-size:13px}}
+
+
+/* GLOBAL BUTTON PRESS FEEDBACK V3.4 */
+button:not(:disabled){transition:transform .1s ease,filter .1s ease,box-shadow .1s ease}
+button:not(:disabled):active{transform:translateY(2px) scale(.975)!important;filter:brightness(.86)!important;box-shadow:inset 0 .22vw .5vw rgba(0,0,0,.3)!important}
+button:disabled{cursor:not-allowed}

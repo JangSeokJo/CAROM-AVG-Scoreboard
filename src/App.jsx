@@ -123,7 +123,21 @@ export default function App(){
    return next;
   })
  }
- function undo(){setGame(g=>{const events=[...g.events];let last;while(events.length){const candidate=events.pop();if(candidate.type==='score'||candidate.playerIndex>=0){last=candidate;break}}if(!last)return g;const ps=g.players.map((p,i)=>i===last.playerIndex?{...p,score:Math.max(0,p.score-last.points),inningPoints:Math.max(0,p.inningPoints-last.points)}:p);return {...g,events,players:ps}})}
+ function undo(){setGame(g=>{
+  const events=[...g.events];
+  const last=events.pop();
+  if(!last)return g;
+  if(last.type==='turn'){
+   const previousTurn=Number(last.playerIndex);
+   const inningWasAdvanced=g.players[previousTurn]?.ball==='노란색';
+   return {...g,events,currentTurn:previousTurn,inning:inningWasAdvanced?Math.max(1,g.inning-1):g.inning};
+  }
+  if(last.type==='score'||last.playerIndex>=0){
+   const ps=g.players.map((p,i)=>i===last.playerIndex?{...p,score:Math.max(0,p.score-last.points),inningPoints:Math.max(0,p.inningPoints-last.points)}:p);
+   return {...g,events,players:ps};
+  }
+  return {...g,events};
+ })}
  function passTurn(){setGame(g=>{if(g.category!=='record'||g.mode!=='single')return g;const yellowEnding=g.players[g.currentTurn]?.ball==='노란색';const nextTurn=g.currentTurn===0?1:0;return {...g,currentTurn:nextTurn,inning:yellowEnding?g.inning+1:g.inning,players:g.players.map((p,i)=>i===g.currentTurn?{...p,inningPoints:0}:p),events:[...g.events,{id:crypto.randomUUID(),type:'turn',inning:g.inning,playerIndex:g.currentTurn,playerName:g.players[g.currentTurn]?.name||'',points:0,total:g.players[g.currentTurn]?.score||0,at:new Date().toISOString()}]}})}
  function endInning(){setGame(g=>({...g,inning:g.inning+1,players:g.players.map(p=>({...p,inningPoints:0})),events:[...g.events,{id:crypto.randomUUID(),inning:g.inning,playerIndex:-1,playerName:'이닝 종료',points:0,at:new Date().toISOString()}]}))}
  function avg(p){return (p.score/Math.max(1,game.inning)).toFixed(3)}

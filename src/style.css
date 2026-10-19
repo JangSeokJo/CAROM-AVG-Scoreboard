@@ -188,3 +188,9 @@
 .exit-guide-modal{position:relative;width:min(34vw,560px);min-width:390px;padding:1.8vw;border:1px solid #df6872;border-radius:1vw;background:linear-gradient(155deg,#4b1c25,#241019);box-shadow:0 1.5vw 4vw rgba(0,0,0,.55);text-align:center;color:#fff}
 .exit-guide-close{position:absolute;right:.8vw;top:.8vw;width:2.3vw;height:2.3vw;min-width:36px;min-height:36px;border:1px solid #a95b63;border-radius:50%;background:#36151c;color:#fff}.exit-guide-modal h2{margin:.15vw 0 .8vw;font-size:1.6vw}.exit-guide-modal p{color:#f0d6d9;font-size:.9vw;line-height:1.7}.exit-guide-modal p strong{color:#ffadb4}.exit-guide-ok{width:100%;height:3.5vw;min-height:50px;margin-top:.7vw;border:1px solid #ff929a;border-radius:.65vw;background:#c63d4a;color:#fff;font-weight:900}
 @media(max-width:900px){.start-app-controls{right:12px;top:12px}.installed-app-status,.exit-app-button{min-width:190px;height:52px;padding:0 13px}.installed-app-status svg,.exit-app-button svg{width:22px;height:22px}.installed-app-status b,.exit-app-button b{font-size:14px}.installed-app-status small,.exit-app-button small{font-size:9px}.exit-guide-modal{width:88vw;min-width:0;padding:23px 18px 18px;border-radius:16px}.exit-guide-modal h2{font-size:21px}.exit-guide-modal p{font-size:13px}.exit-guide-ok{height:52px}}
+
+
+/* GLOBAL BUTTON PRESS FEEDBACK V3.4 */
+button:not(:disabled){transition:transform .1s ease,filter .1s ease,box-shadow .1s ease}
+button:not(:disabled):active{transform:translateY(2px) scale(.975)!important;filter:brightness(.86)!important;box-shadow:inset 0 .22vw .5vw rgba(0,0,0,.3)!important}
+button:disabled{cursor:not-allowed}
