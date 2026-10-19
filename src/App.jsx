@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {createClient} from '@supabase/supabase-js';
-import {CheckCircle2,Users,UserRound,Play,Save,RotateCcw,X,UserCheck} from 'lucide-react';
+import {CheckCircle2,Download,Users,UserRound,Play,Save,RotateCcw,X,UserCheck} from 'lucide-react';
 import Scoreboard from './Scoreboard.jsx';
 import './Scoreboard.css';
 
@@ -28,8 +28,22 @@ export default function App(){
  const [countdown,setCountdown]=useState(5);
  const [saving,setSaving]=useState(false);
  const [savedComplete,setSavedComplete]=useState(false);
+ const [installPrompt,setInstallPrompt]=useState(null);
+ const [isStandalone,setIsStandalone]=useState(()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true);
 
  useEffect(()=>{localStorage.setItem('carom-score-live',JSON.stringify(game))},[game]);
+ useEffect(()=>{
+  const ready=e=>{e.preventDefault();setInstallPrompt(e)};
+  const installed=()=>{setInstallPrompt(null);setIsStandalone(true)};
+  window.addEventListener('beforeinstallprompt',ready);
+  window.addEventListener('appinstalled',installed);
+  return()=>{window.removeEventListener('beforeinstallprompt',ready);window.removeEventListener('appinstalled',installed)};
+ },[]);
+ async function installApp(){
+  if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;setInstallPrompt(null);return}
+  setNotice('설치 메뉴가 표시되지 않으면 브라우저 메뉴에서 홈 화면에 추가 또는 앱 설치를 선택해 주세요.');
+ }
+
  useEffect(()=>{if(screen==='setup') loadPlayers()},[screen]);
  useEffect(()=>{
   if(!dialog||!['save','postSave'].includes(dialog))return;
@@ -55,24 +69,24 @@ export default function App(){
   if(matchError){setNotice(`AVG 조회 실패: ${matchError.message}`);setPlayers(playerData||[]);return}
   setMatchHistory(matchData||[]);
   const stats=new Map();
-  const add=(name,score,innings)=>{
+  const add=(name,score,innings,win)=>{
    const key=String(name||'').trim();
    const point=Number(score)||0;
    const inning=Number(innings)||0;
    if(!key||inning<=0)return;
-   const prev=stats.get(key)||{points:0,innings:0};
-   stats.set(key,{points:prev.points+point,innings:prev.innings+inning});
+   const prev=stats.get(key)||{points:0,innings:0,wins:0,games:0};
+   stats.set(key,{points:prev.points+point,innings:prev.innings+inning,wins:prev.wins+(win?1:0),games:prev.games+1});
   };
   (matchData||[]).forEach(m=>{
    const innings=Math.max(0,Number(m.innings)||0);
-   add(m.p1,m.score1,innings);
+   add(m.p1,m.score1,innings,Number(m.score1)>Number(m.score2));
    const yellowInnings=Number(m.score2)<Number(m.score1)?Math.max(1,innings-1):innings;
-   add(m.p2,m.score2,yellowInnings);
+   add(m.p2,m.score2,yellowInnings,Number(m.score2)>Number(m.score1));
   });
   setPlayers((playerData||[]).map(p=>{
    const stat=stats.get(String(p.name||'').trim());
    const calculatedAvg=stat&&stat.innings>0?stat.points/stat.innings:null;
-   return {...p,calculatedAvg};
+   return {...p,calculatedAvg,winRate:stat?.games?stat.wins/stat.games*100:null,wins:stat?.wins||0,games:stat?.games||0};
   }));
  }
  function makePlayer(i,mode){return {side:i,playerId:'',name:'',handicap:0,ball:mode==='single'?(i===0?'흰색':'노란색'):'',score:0,hr:0,inningPoints:0}}
@@ -88,7 +102,7 @@ export default function App(){
   setNotice('');
   setScreen(category==='quick'?'play':'setup');
  }
- function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:id,name:p?.name||'',handicap:Number(p?.handicap||0),calculatedAvg:p?.calculatedAvg??null}:x)}));setPickerIndex(null)}
+ function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:id,name:p?.name||'',handicap:Number(p?.handicap||0),calculatedAvg:p?.calculatedAvg??null,winRate:p?.winRate??null,wins:p?.wins||0,games:p?.games||0}:x)}));setPickerIndex(null)}
  function setStarter(index){setGame(g=>({...g,currentTurn:index,players:g.players.map((p,i)=>({...p,ball:i===index?'흰색':'노란색'}))}))}
  function start(){if(game.players.some(p=>!p.name)){setNotice('모든 선수를 선택해 주세요.');return}if(new Set(game.players.map(p=>p.playerId)).size!==game.players.length){setNotice('같은 선수를 중복 선택할 수 없습니다.');return}setNotice('');setGame(g=>({...g,status:'playing'}));setScreen('play')}
  function score(index,points){
@@ -133,7 +147,7 @@ export default function App(){
  return <div className="app"><div className="stage">
   {screen!=='play'&&<header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>}
   {notice&&<div className="notice">{notice}</div>}
-  {screen==='start'&&<section className="start start-centered">
+  {screen==='start'&&<section className="start start-centered">{!isStandalone&&<button type="button" className="install-app-button" onClick={installApp}><Download/><span><b>앱 설치</b><small>전체 화면으로 사용</small></span></button>}
     <div className="hero start-hero">
       <div className="balls">⚪ 🟡 🔴</div>
       <h1>CAROM AVG SCORE</h1>
@@ -166,7 +180,7 @@ export default function App(){
     </div>
   </section>}
   {screen==='setup'&&<section className="setup"><div className="section-title"><div><small>GAME SETUP</small><h1>{game.mode==='multi'?`${game.playerCount}명 다인 경기 선수 선택`:'선수와 경기 정보를 설정하세요'}</h1></div><input type="date" value={game.date} onChange={e=>setGame(g=>({...g,date:e.target.value}))}/></div><div className={`player-grid ${game.mode}`}>
-   {game.players.map((p,i)=><article className={`player-setup ${p.playerId?'selected':''} ${p.ball==='노란색'?'yellow-player':''}`} key={i}><div className={`ball ${p.ball}`}></div><h2>{game.mode==='multi'?`${i+1}번 선수`:i===0?'왼쪽 선수':'오른쪽 선수'}</h2><button type="button" className="player-picker-button" onClick={()=>setPickerIndex(i)}><UserCheck/><span><small>{loadingPlayers?'선수 불러오는 중...':p.playerId?'선택된 선수':'선수 선택'}</small><b>{p.name||'목록에서 선수를 선택하세요'}</b></span><em>{p.playerId?`${p.handicap||0}점`:'선택'}</em></button><div className="setup-player-stats"><b>누적 AVG {p.playerId&&p.calculatedAvg!=null?Number(p.calculatedAvg).toFixed(3):'-'}</b>{game.mode==='single'&&headToHead&&game.players.every(x=>x.playerId)&&<span>상대전적 <strong>{i===0?headToHead.aw:headToHead.bw}승 {i===0?headToHead.bw:headToHead.aw}패</strong><br/>상대 AVG {i===0?headToHead.aAvg:headToHead.bAvg} · HR {i===0?headToHead.ahr:headToHead.bhr}</span>}</div>{game.mode==='single'&&<button type="button" className={`starter-button ${game.currentTurn===i?'active':''}`} disabled={!p.playerId} onClick={()=>setStarter(i)}>{game.currentTurn===i?'선공 · 흰공':'선공으로 선택'}</button>}</article>)}
+   {game.players.map((p,i)=><article className={`player-setup ${p.playerId?'selected':''} ${p.ball==='노란색'?'yellow-player':''}`} key={i}><div className={`ball ${p.ball}`}></div><h2>{game.mode==='multi'?`${i+1}번 선수`:i===0?'왼쪽 선수':'오른쪽 선수'}</h2><button type="button" className="player-picker-button" onClick={()=>setPickerIndex(i)}><UserCheck/><span><small>{loadingPlayers?'선수 불러오는 중...':p.playerId?'선택된 선수':'선수 선택'}</small><b>{p.name||'목록에서 선수를 선택하세요'}</b>{p.playerId&&<small className="selected-meta">핸디 {p.handicap||0} · AVG {p.calculatedAvg!=null?Number(p.calculatedAvg).toFixed(3):'-'} · 승률 {p.winRate!=null?`${p.winRate.toFixed(1)}%`:'-'}</small>}</span><em>{p.playerId?`${p.handicap||0}점`:'선택'}</em></button><div className="setup-player-stats"><b>핸디 {p.handicap||0} · AVG {p.playerId&&p.calculatedAvg!=null?Number(p.calculatedAvg).toFixed(3):'-'} · 승률 {p.winRate!=null?`${p.winRate.toFixed(1)}%`:'-'}</b>{game.mode==='single'&&headToHead&&game.players.every(x=>x.playerId)&&<span>상대전적 <strong>{i===0?headToHead.aw:headToHead.bw}승 {i===0?headToHead.bw:headToHead.aw}패</strong><br/>상대 AVG {i===0?headToHead.aAvg:headToHead.bAvg} · HR {i===0?headToHead.ahr:headToHead.bhr}</span>}</div>{game.mode==='single'&&<button type="button" className={`starter-button ${game.currentTurn===i?'active':''}`} disabled={!p.playerId} onClick={()=>setStarter(i)}>{game.currentTurn===i?'선공 · 흰공':'선공으로 선택'}</button>}</article>)}
    </div>{game.category==='record'&&game.mode==='single'&&<div className="timer-setup"><div><b>턴 타이머</b><span>선수 차례마다 적용할 시간을 선택하세요.</span></div><div className="timer-presets">{[30,35,40,45].map(sec=><button key={sec} className={timerPreset===sec?'active':''} onClick={()=>setTimerPreset(sec)}>{sec}초</button>)}<button className={timerPreset==='custom'?'active':''} onClick={()=>setTimerPreset('custom')}>기타 설정</button></div>{timerPreset==='custom'&&<label className="custom-timer"><input type="number" min="5" max="300" value={customTimer} onChange={e=>setCustomTimer(e.target.value)} placeholder="초 입력"/><span>초</span><small>5초부터 300초까지 입력할 수 있습니다.</small></label>}</div>}<div className="setup-footer"><button onClick={()=>setScreen('mode')}>이전</button><button className="primary" onClick={start}>경기 시작</button></div></section>}
   {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onFinish={finish} onExit={()=>ask('exit')} avg={avg}/>}
   {screen==='result'&&<section className="result result-integrated"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=>{const win=p===winner;return <article key={i} className={`${p.ball==='노란색'?'yellow-result':''}`}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span className={`result-badge ${game.mode==='single'?(win?'win':'loss'):''}`}>{game.mode==='single'?(win?'승':'패'):`${i+1}위`}</span><div className="result-stats"><b>AVG {avg(p)}</b><b>HR {p.hr}</b></div></article>})}</div>{game.mode==='single'&&headToHead&&<div className="result-h2h-live"><b>이번 경기 포함 상대전적</b><span>{game.players[0]?.name} <strong>{headToHead.aw}승</strong> · AVG {headToHead.aAvg} · HR {headToHead.ahr}</span><i>VS</i><span>{game.players[1]?.name} <strong>{headToHead.bw}승</strong> · AVG {headToHead.bAvg} · HR {headToHead.bhr}</span><small>총 {headToHead.total}경기</small></div>}<div className="result-save-area">{game.category==='record'?<button className={`result-save-button ${savedComplete?'completed':''}`} disabled={saving||savedComplete} onClick={()=>ask('save')}>{savedComplete?<><CheckCircle2/> 저장이 완료되었습니다</>:saving?<><Save/> 저장 중...</>:<><Save/> 기록 앱에 저장하기</>}</button>:<button className="result-save-button" onClick={reset}><Play/> 새 경기 시작</button>}<div className="result-return-buttons"><button onClick={()=>ask('return')}>경기로 돌아가기</button><button onClick={()=>ask('home')}>첫 화면으로 가기</button></div></div></section>}
