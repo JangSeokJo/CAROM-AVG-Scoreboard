@@ -646,3 +646,59 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
   .setup-player-stats{flex-basis:clamp(66px,8.7vh,82px)!important}
   .starter-button{flex-basis:clamp(44px,5.7vh,54px)!important}
 }
+
+
+/* PLAYER PICKER + INFO TYPOGRAPHY + TIMER HEIGHT V4.7 */
+.player-picker-modal{
+  background:linear-gradient(155deg,#0b3555,#061f36)!important;
+  border-color:#419bd2!important;
+  box-shadow:0 1.5vw 4vw rgba(0,0,0,.5),inset 0 0 2.5vw rgba(55,171,239,.06)!important;
+}
+.player-picker-list>button{
+  background:linear-gradient(145deg,#124a72,#0d3859)!important;
+  border-color:#3b82ad!important;
+  box-shadow:inset 0 0 1.1vw rgba(91,192,244,.045),0 .25vw .6vw rgba(0,0,0,.13)!important;
+  color:#f8fcff!important;
+}
+.player-picker-list>button:hover{
+  background:linear-gradient(145deg,#1a6597,#12496f)!important;
+  border-color:#70cfff!important;
+}
+.player-picker-list>button.current{
+  background:linear-gradient(145deg,#1777b4,#125b8b)!important;
+  border-color:#7ad7ff!important;
+  box-shadow:0 0 0 .18vw rgba(91,200,255,.30),inset 0 0 1.6vw rgba(103,210,255,.10)!important;
+}
+.player-picker-list>button:disabled{
+  opacity:.42!important;
+  filter:saturate(.6)!important;
+}
+.player-picker-list>button>b{font-size:1.35vw!important;color:#fff!important}
+.player-picker-list>button>small{font-size:.78vw!important;color:#afd5eb!important}
+.player-picker-list>button>strong{font-size:1.18vw!important;color:#8addff!important}
+.player-picker-list>button>em{font-size:1.2vw!important;color:#ffe05e!important}
+.player-picker-list>button>i{background:#c04653!important;color:#fff!important;opacity:.9!important}
+.player-picker-button .player-main-meta{
+  font-size:clamp(18px,min(1.25vw,2.05vh),24px)!important;
+  line-height:1.28!important;
+  color:#d6f0ff!important;
+  letter-spacing:-.015em!important;
+}
+.yellow-player .player-picker-button .player-main-meta{color:#fff9cf!important;text-shadow:0 1px 0 rgba(0,0,0,.18)!important}
+.setup{
+  grid-template-rows:minmax(54px,7.2vh) clamp(380px,40.5vh,490px) clamp(76px,9.8vh,100px) clamp(76px,9.8vh,100px) clamp(82px,10.5vh,110px)!important;
+}
+.timeout-setup,.timer-setup{
+  padding:clamp(10px,1.05vh,15px) clamp(14px,1vw,21px)!important;
+}
+.timeout-setup b,.timer-setup b{font-size:clamp(16px,min(1.05vw,1.8vh),21px)!important}
+.timeout-setup span,.timer-setup span{font-size:clamp(11px,min(.7vw,1.2vh),14px)!important}
+.timeout-presets button,.timer-presets button{
+  height:clamp(52px,6.8vh,72px)!important;
+  font-size:clamp(15px,min(1vw,1.75vh),20px)!important;
+}
+@media(max-height:850px) and (orientation:landscape){
+  .setup{grid-template-rows:minmax(44px,6.4vh) clamp(300px,37.5vh,360px) clamp(62px,8.7vh,76px) clamp(62px,8.7vh,76px) clamp(68px,9.3vh,84px)!important}
+  .player-picker-button .player-main-meta{font-size:clamp(15px,min(1.08vw,1.75vh),19px)!important}
+  .timeout-presets button,.timer-presets button{height:clamp(44px,6.1vh,56px)!important}
+}
