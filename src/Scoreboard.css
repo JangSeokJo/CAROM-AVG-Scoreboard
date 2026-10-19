@@ -52,3 +52,52 @@ button:disabled{cursor:not-allowed}
 
 /* TIMEOUT CONTROLS + WIDER PLAYER BOARDS V3.6 */
 .sb-grid{grid-template-columns:1.18fr 1.05fr 1.18fr!important;gap:.7vw!important}.sb-center{min-width:0}.sb-camera{min-height:0}.main-score-area{min-height:12.3vw!important}.classic-score{font-size:15vw!important;line-height:.64!important;transform:scaleY(1.12)!important}.timeout-stack{position:absolute;z-index:5;left:1vw;top:8.6vw;display:flex;flex-direction:column;gap:.38vw}.timeout-stack button{width:2.55vw;height:2.35vw;min-width:38px;min-height:34px;padding:0;border:1px solid #50b9f7;border-radius:.48vw;background:#0c5484;color:#fff;display:flex;align-items:center;justify-content:center;gap:.16vw;box-shadow:0 .2vw .45vw rgba(0,0,0,.18)}.timeout-stack button span{font-size:.55vw;font-weight:950}.timeout-stack button b{font-size:.82vw}.timeout-stack button.used{opacity:.28;filter:grayscale(.6);background:#566a78;border-color:#7d8d98;text-decoration:line-through}.timeout-stack button:disabled{cursor:not-allowed}.sb-player.yellow .timeout-stack button:not(.used){background:#8b6b00;border-color:#ffe066;color:#fff}.score-adjust{position:relative;z-index:4}.raised-buttons button{height:6.2vw!important}.sb-camera b{font-size:1vw}.inning-card.inning-wide{min-height:5.4vw}
+
+
+/* TIMEOUT VISIBILITY + CURRENT SCORE BOX V3.8 */
+.sb-player{position:relative!important;isolation:isolate!important}
+.timeout-stack{
+  left:1.15vw!important;
+  top:12.05vw!important;
+  gap:.48vw!important;
+  opacity:.58!important;
+}
+.timeout-stack button{
+  width:2.35vw!important;
+  height:2.1vw!important;
+  min-width:35px!important;
+  min-height:31px!important;
+  border-width:1px!important;
+  box-shadow:0 .14vw .32vw rgba(0,0,0,.14)!important;
+  transition:opacity .15s ease,transform .1s ease,filter .1s ease!important;
+}
+.timeout-stack button:not(:disabled):hover{opacity:1!important;filter:brightness(1.08)!important}
+.timeout-stack button:not(:disabled):active{opacity:1!important;transform:translateY(2px) scale(.96)!important}
+.timeout-stack button.used{opacity:.25!important;filter:grayscale(.85)!important;box-shadow:none!important}
+.sb-player:not(.yellow) .timeout-stack button:not(.used){
+  background:#1f78a8!important;
+  border-color:#75c9f1!important;
+  color:#fff!important;
+}
+.sb-player.yellow .timeout-stack button:not(.used){
+  background:#b18a16!important;
+  border-color:#ffe27a!important;
+  color:#fff!important;
+}
+.sb-player.inactive .timeout-stack{opacity:.3!important}
+.turn-score-box{
+  right:.15vw!important;
+  bottom:.5vw!important;
+  width:7.05vw!important;
+  height:7.05vw!important;
+  aspect-ratio:1/1!important;
+  border-radius:.9vw!important;
+  padding:.35vw!important;
+}
+.turn-score-box small{font-size:.78vw!important;line-height:1.05!important}
+.turn-score-box b{font-size:3.15vw!important;line-height:1!important}
+@media(max-height:850px) and (orientation:landscape){
+  .timeout-stack{top:11.15vw!important;left:1vw!important;gap:.32vw!important}
+  .turn-score-box{width:6.55vw!important;height:6.55vw!important}
+  .turn-score-box b{font-size:2.9vw!important}
+}
