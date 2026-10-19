@@ -29,10 +29,33 @@ export default function App(){
  async function loadPlayers(){
   if(!supabase){setNotice('Supabase 환경변수를 설정해 주세요.');return}
   setLoadingPlayers(true);
-  const {data,error}=await supabase.from('players').select('*').eq('active',true).order('name');
+  const [{data:playerData,error:playerError},{data:matchData,error:matchError}]=await Promise.all([
+   supabase.from('players').select('*').eq('active',true).order('name'),
+   supabase.from('matches').select('p1,p2,score1,score2,innings')
+  ]);
   setLoadingPlayers(false);
-  if(error){setNotice(`선수 조회 실패: ${error.message}`);return}
-  setPlayers(data||[]);
+  if(playerError){setNotice(`선수 조회 실패: ${playerError.message}`);return}
+  if(matchError){setNotice(`AVG 조회 실패: ${matchError.message}`);setPlayers(playerData||[]);return}
+  const stats=new Map();
+  const add=(name,score,innings)=>{
+   const key=String(name||'').trim();
+   const point=Number(score)||0;
+   const inning=Number(innings)||0;
+   if(!key||inning<=0)return;
+   const prev=stats.get(key)||{points:0,innings:0};
+   stats.set(key,{points:prev.points+point,innings:prev.innings+inning});
+  };
+  (matchData||[]).forEach(m=>{
+   const innings=Math.max(0,Number(m.innings)||0);
+   add(m.p1,m.score1,innings);
+   const yellowInnings=Number(m.score2)<Number(m.score1)?Math.max(1,innings-1):innings;
+   add(m.p2,m.score2,yellowInnings);
+  });
+  setPlayers((playerData||[]).map(p=>{
+   const stat=stats.get(String(p.name||'').trim());
+   const calculatedAvg=stat&&stat.innings>0?stat.points/stat.innings:null;
+   return {...p,calculatedAvg};
+  }));
  }
  function makePlayer(i,mode){return {side:i,playerId:'',name:'',handicap:0,ball:mode==='single'?(i===0?'흰색':'노란색'):'',score:0,hr:0,inningPoints:0}}
  function continueMode(){
@@ -124,9 +147,9 @@ export default function App(){
 
 function PlayerPicker({players,selectedIds,currentId,onSelect,onClose}){
  const formatAverage=p=>{
-  const value=p.avg??p.average??p.current_avg??p.currentAverage;
+  const value=p.calculatedAvg??p.avg??p.average??p.current_avg??p.currentAverage;
   const number=Number(value);
   return value!==null&&value!==undefined&&value!==''&&Number.isFinite(number)?number.toFixed(3):'-';
  };
- return <div className="player-picker-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><section className="player-picker-modal" role="dialog" aria-modal="true" aria-label="선수 선택"><header><div><small>PLAYER SELECT</small><h2>선수를 선택하세요</h2></div><div className="player-count">총 {players.length}명</div><button type="button" onClick={onClose} aria-label="닫기"><X/></button></header><div className="player-picker-list">{players.map(p=>{const id=String(p.id);const used=selectedIds.includes(id)&&id!==currentId;return <button type="button" key={id} disabled={used} className={id===currentId?'current':''} onClick={()=>onSelect(p.id)}><div className="player-avatar">{String(p.name||'?').slice(0,1)}</div><b>{p.name}</b>{p.nick&&<small>{p.nick}</small>}<strong>AVG {formatAverage(p)}</strong><em>핸디 {p.handicap||0}점</em>{used&&<i>선택됨</i>}</button>})}{!players.length&&<div className="player-empty">등록된 선수가 없습니다.</div>}</div><footer><span>선수 이름과 에버리지를 확인한 뒤 선택하세요.</span><button type="button" onClick={onClose}>취소</button></footer></section></div>
+ return <div className="player-picker-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><section className="player-picker-modal" role="dialog" aria-modal="true" aria-label="선수 선택"><header><div><small>PLAYER SELECT</small><h2>선수를 선택하세요</h2></div><div className="player-count">총 {players.length}명</div><button type="button" onClick={onClose} aria-label="닫기"><X/></button></header><div className="player-picker-list">{players.map(p=>{const id=String(p.id);const used=selectedIds.includes(id)&&id!==currentId;return <button type="button" key={id} disabled={used} className={id===currentId?'current':''} onClick={()=>onSelect(p.id)}><b>{p.name}</b>{p.nick&&<small>{p.nick}</small>}<strong>AVG {formatAverage(p)}</strong><em>핸디 {p.handicap||0}점</em>{used&&<i>선택됨</i>}</button>})}{!players.length&&<div className="player-empty">등록된 선수가 없습니다.</div>}</div><footer><span>선수 이름, AVG와 핸디를 확인한 뒤 선택하세요.</span><button type="button" onClick={onClose}>취소</button></footer></section></div>
 }
