@@ -32,6 +32,8 @@ export default function App(){
  const [isStandalone,setIsStandalone]=useState(()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true);
  const [installedKnown,setInstalledKnown]=useState(()=>localStorage.getItem('carom-score-installed')==='true');
  const [exitGuide,setExitGuide]=useState(false);
+ const [appActionDialog,setAppActionDialog]=useState(null);
+ const [uninstallGuide,setUninstallGuide]=useState(false);
 
  useEffect(()=>{localStorage.setItem('carom-score-live',JSON.stringify(game))},[game]);
  useEffect(()=>{
@@ -47,9 +49,21 @@ export default function App(){
   if(installPrompt){installPrompt.prompt();const choice=await installPrompt.userChoice;if(choice?.outcome==='accepted'){localStorage.setItem('carom-score-installed','true');setInstalledKnown(true)}setInstallPrompt(null);return}
   setNotice('설치 메뉴가 표시되지 않으면 브라우저 메뉴에서 홈 화면에 추가 또는 앱 설치를 선택해 주세요.');
  }
- function exitInstalledApp(){
-  setExitGuide(true);
-  setTimeout(()=>{try{window.close()}catch{}},120);
+ function requestAppExit(){setAppActionDialog('exit')}
+ function requestAppUninstall(){setAppActionDialog('uninstall')}
+ function confirmAppAction(){
+  const action=appActionDialog;
+  setAppActionDialog(null);
+  if(action==='exit'){
+   setExitGuide(true);
+   setTimeout(()=>{try{window.close()}catch{}},120);
+  }
+  if(action==='uninstall')setUninstallGuide(true);
+ }
+ function acknowledgeUninstall(){
+  localStorage.removeItem('carom-score-installed');
+  setInstalledKnown(false);
+  setUninstallGuide(false);
  }
 
  useEffect(()=>{if(screen==='setup') loadPlayers()},[screen]);
@@ -169,7 +183,7 @@ export default function App(){
  return <div className="app"><div className="stage">
   {screen!=='play'&&<header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>}
   {notice&&<div className="notice">{notice}</div>}
-  {screen==='start'&&<section className="start start-centered"><div className="start-app-controls">{isStandalone?<button type="button" className="exit-app-button" onClick={exitInstalledApp}><X/><span><b>앱 종료하기</b><small>설치된 앱 닫기</small></span></button>:installedKnown?<div className="installed-app-status"><CheckCircle2/><span><b>앱이 설치되어 있습니다</b><small>홈 화면에서 전체 화면으로 실행할 수 있습니다</small></span></div>:<button type="button" className="install-app-button" onClick={installApp}><Download/><span><b>앱 설치</b><small>전체 화면으로 사용</small></span></button>}</div>
+  {screen==='start'&&<section className="start start-centered"><div className="start-app-controls">{isStandalone?<><button type="button" className="exit-app-button" onClick={requestAppExit}><X/><span><b>앱 종료하기</b><small>설치된 앱 닫기</small></span></button><button type="button" className="uninstall-app-button" onClick={requestAppUninstall}><Download/><span><b>앱 삭제</b><small>삭제 방법 확인</small></span></button></>:installedKnown?<div className="installed-app-status"><CheckCircle2/><span><b>앱이 설치되어 있습니다</b><small>홈 화면에서 전체 화면으로 실행할 수 있습니다</small></span></div>:<button type="button" className="install-app-button" onClick={installApp}><Download/><span><b>앱 설치</b><small>전체 화면으로 사용</small></span></button>}</div>
     <div className="hero start-hero">
       <div className="balls">⚪ 🟡 🔴</div>
       <h1>CAROM AVG SCORE</h1>
@@ -207,6 +221,8 @@ export default function App(){
   {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onFinish={finish} onExit={()=>ask('exit')} avg={avg}/>}
   {screen==='result'&&<section className="result result-integrated"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=>{const win=p===winner;return <article key={i} className={`${p.ball==='노란색'?'yellow-result':''}`}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span className={`result-badge ${game.mode==='single'?(win?'win':'loss'):''}`}>{game.mode==='single'?(win?'승':'패'):`${i+1}위`}</span><div className="result-stats"><b>AVG {avg(p)}</b><b>HR {p.hr}</b></div></article>})}</div>{game.mode==='single'&&headToHead&&<div className="result-h2h-live"><b>이번 경기 포함 상대전적</b><span>{game.players[0]?.name} <strong>{headToHead.aw}승</strong> · AVG {headToHead.aAvg} · HR {headToHead.ahr}</span><i>VS</i><span>{game.players[1]?.name} <strong>{headToHead.bw}승</strong> · AVG {headToHead.bAvg} · HR {headToHead.bhr}</span><small>총 {headToHead.total}경기</small></div>}<div className="result-save-area">{game.category==='record'?<button className={`result-save-button ${savedComplete?'completed':''}`} disabled={saving||savedComplete} onClick={()=>ask('save')}>{savedComplete?<><CheckCircle2/> 저장이 완료되었습니다</>:saving?<><Save/> 저장 중...</>:<><Save/> 기록 앱에 저장하기</>}</button>:<button className="result-save-button" onClick={reset}><Play/> 새 경기 시작</button>}<div className="result-return-buttons"><button onClick={()=>ask('return')}>경기로 돌아가기</button><button onClick={()=>ask('home')}>첫 화면으로 가기</button></div></div></section>}
   {dialog&&<div className="confirm-overlay"><section className={`confirm-modal ${dialog}`} role="dialog" aria-modal="true"><button className="confirm-close" onClick={()=>setDialog(null)}><X/></button>{dialog==='postSave'&&<div className="save-return-check"><CheckCircle2/></div>}<h2>{dialog==='save'?'경기 결과를 저장할까요?':dialog==='postSave'?'경기 저장이 완료되었습니다':dialog==='return'?'경기 화면으로 돌아갈까요?':dialog==='exit'?'경기를 나갈까요?':'첫 화면으로 이동할까요?'}</h2><p>{dialog==='save'?<><strong>{countdown}초 후 자동 저장됩니다.</strong><br/>취소하면 결과 화면을 계속 볼 수 있습니다.</>:dialog==='postSave'?<><strong>{countdown}초 후 첫 화면으로 돌아갑니다.</strong><br/>취소하면 마지막 경기 결과를 계속 볼 수 있습니다.</>:dialog==='return'?'경기 결과를 수정할 수 있도록 경기 화면으로 돌아갑니다.':dialog==='exit'?'진행 중인 경기 내용은 기기에 유지됩니다.':'저장하지 않은 결과는 사라질 수 있습니다.'}</p>{['save','postSave'].includes(dialog)&&<div className="confirm-progress"><i/></div>}<div className="confirm-actions"><button onClick={()=>setDialog(null)}>{dialog==='postSave'?'취소하고 결과 계속 보기':'취소'}</button><button className="confirm-primary" onClick={confirmDialog}>{dialog==='save'?'지금 저장하기':dialog==='postSave'?'지금 첫 화면으로 가기':dialog==='return'?'경기로 돌아가기':dialog==='exit'?'경기 나가기':'첫 화면으로 이동'}</button></div></section></div>}
+  {appActionDialog&&<div className="app-action-overlay"><section className={`app-action-modal ${appActionDialog}`} role="dialog" aria-modal="true"><button type="button" className="app-action-close" onClick={()=>setAppActionDialog(null)}><X/></button><h2>{appActionDialog==='exit'?'앱을 종료할까요?':'앱을 삭제할까요?'}</h2><p>{appActionDialog==='exit'?<>현재 화면을 닫고 앱을 종료합니다.<br/><strong>기기 정책에 따라 홈 버튼이나 앱 전환 화면이 필요할 수 있습니다.</strong></>:<>앱 삭제는 운영체제 또는 설치한 브라우저에서 진행됩니다.<br/><strong>확인을 누르면 기기에 맞는 삭제 방법을 안내합니다.</strong></>}</p><div className="app-action-buttons"><button type="button" onClick={()=>setAppActionDialog(null)}>취소</button><button type="button" className={appActionDialog==='exit'?'confirm-exit':'confirm-uninstall'} onClick={confirmAppAction}>{appActionDialog==='exit'?'앱 종료하기':'삭제 방법 보기'}</button></div></section></div>}
+  {uninstallGuide&&<div className="uninstall-guide-overlay"><section className="uninstall-guide-modal" role="dialog" aria-modal="true"><button type="button" className="app-action-close" onClick={()=>setUninstallGuide(false)}><X/></button><h2>앱 삭제 방법</h2><div className="uninstall-steps"><p><b>Windows / Edge</b><span>앱 창 메뉴에서 앱 제거를 선택하거나, Windows 설정 → 앱 → 설치된 앱에서 CAROM AVG SCORE를 제거하세요.</span></p><p><b>Android</b><span>홈 화면의 앱 아이콘을 길게 누른 후 앱 정보 또는 제거를 선택하세요.</span></p><p><b>iPhone / iPad</b><span>홈 화면의 앱 아이콘을 길게 누르고 앱 제거 → 앱 삭제를 선택하세요.</span></p></div><small>웹 앱은 보안 정책상 앱 내부에서 운영체제의 설치 항목을 직접 삭제할 수 없습니다.</small><div className="uninstall-guide-actions"><button type="button" onClick={()=>setUninstallGuide(false)}>안내 닫기</button><button type="button" className="uninstall-done" onClick={acknowledgeUninstall}>삭제 완료 표시</button></div></section></div>}
   {exitGuide&&<div className="exit-guide-overlay"><section className="exit-guide-modal" role="dialog" aria-modal="true"><button type="button" className="exit-guide-close" onClick={()=>setExitGuide(false)}><X/></button><h2>앱 종료하기</h2><p>기기와 브라우저 정책에 따라 앱이 자동으로 닫히지 않을 수 있습니다.<br/><strong>홈 버튼 또는 앱 전환 화면을 사용해 앱을 종료해 주세요.</strong></p><button type="button" className="exit-guide-ok" onClick={()=>setExitGuide(false)}>확인</button></section></div>}
   {pickerIndex!==null&&<PlayerPicker players={players} selectedIds={game.players.map(p=>String(p.playerId||''))} currentId={String(game.players[pickerIndex]?.playerId||'')} onSelect={id=>setPlayer(pickerIndex,id)} onClose={()=>setPickerIndex(null)}/>}
  </div></div>
