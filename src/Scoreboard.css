@@ -48,3 +48,7 @@
 button:not(:disabled){transition:transform .1s ease,filter .1s ease,box-shadow .1s ease}
 button:not(:disabled):active{transform:translateY(2px) scale(.975)!important;filter:brightness(.86)!important;box-shadow:inset 0 .22vw .5vw rgba(0,0,0,.3)!important}
 button:disabled{cursor:not-allowed}
+
+
+/* TIMEOUT CONTROLS + WIDER PLAYER BOARDS V3.6 */
+.sb-grid{grid-template-columns:1.18fr 1.05fr 1.18fr!important;gap:.7vw!important}.sb-center{min-width:0}.sb-camera{min-height:0}.main-score-area{min-height:12.3vw!important}.classic-score{font-size:15vw!important;line-height:.64!important;transform:scaleY(1.12)!important}.timeout-stack{position:absolute;z-index:5;left:1vw;top:8.6vw;display:flex;flex-direction:column;gap:.38vw}.timeout-stack button{width:2.55vw;height:2.35vw;min-width:38px;min-height:34px;padding:0;border:1px solid #50b9f7;border-radius:.48vw;background:#0c5484;color:#fff;display:flex;align-items:center;justify-content:center;gap:.16vw;box-shadow:0 .2vw .45vw rgba(0,0,0,.18)}.timeout-stack button span{font-size:.55vw;font-weight:950}.timeout-stack button b{font-size:.82vw}.timeout-stack button.used{opacity:.28;filter:grayscale(.6);background:#566a78;border-color:#7d8d98;text-decoration:line-through}.timeout-stack button:disabled{cursor:not-allowed}.sb-player.yellow .timeout-stack button:not(.used){background:#8b6b00;border-color:#ffe066;color:#fff}.score-adjust{position:relative;z-index:4}.raised-buttons button{height:6.2vw!important}.sb-camera b{font-size:1vw}.inning-card.inning-wide{min-height:5.4vw}

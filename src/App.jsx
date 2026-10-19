@@ -8,7 +8,7 @@ const URL=import.meta.env.VITE_SUPABASE_URL||'';
 const KEY=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY||import.meta.env.VITE_SUPABASE_ANON_KEY||'';
 const supabase=URL&&KEY?createClient(URL,KEY):null;
 const today=()=>new Date().toISOString().slice(0,10);
-const INITIAL={category:'record',mode:'single',playerCount:3,date:today(),players:[],inning:1,currentTurn:0,timerSeconds:40,events:[],status:'ready'};
+const INITIAL={category:'record',mode:'single',playerCount:3,date:today(),players:[],inning:1,currentTurn:0,timerSeconds:40,events:[],timeoutCount:2,timeoutVersion:0,status:'ready'};
 const safeNum=v=>Math.max(0,Number(v)||0);
 
 export default function App(){
@@ -23,6 +23,7 @@ export default function App(){
  const [playerCount,setPlayerCount]=useState(3);
  const [timerPreset,setTimerPreset]=useState(40);
  const [customTimer,setCustomTimer]=useState('');
+ const [timeoutPreset,setTimeoutPreset]=useState(2);
  const [pickerIndex,setPickerIndex]=useState(null);
  const [dialog,setDialog]=useState(null);
  const [countdown,setCountdown]=useState(5);
@@ -111,7 +112,7 @@ export default function App(){
    return {...p,calculatedAvg,winRate:stat?.games?stat.wins/stat.games*100:null,wins:stat?.wins||0,games:stat?.games||0};
   }));
  }
- function makePlayer(i,mode){return {side:i,playerId:'',name:'',handicap:0,ball:mode==='single'?(i===0?'흰색':'노란색'):'',score:0,hr:0,inningPoints:0}}
+ function makePlayer(i,mode){return {side:i,playerId:'',name:'',handicap:0,ball:mode==='single'?(i===0?'흰색':'노란색'):'',score:0,hr:0,inningPoints:0,timeoutsUsed:0}}
  function continueMode(){
   const mode=category==='record'?'single':quickMode;
   const count=mode==='single'?2:playerCount;
@@ -120,7 +121,7 @@ export default function App(){
    name:category==='quick'?`선수 ${i+1}`:'',
   }));
   const selectedTimer=timerPreset==='custom'?Math.min(300,Math.max(5,Number(customTimer)||40)):timerPreset;
-  setGame({...INITIAL,category,mode,playerCount:count,date:today(),players:nextPlayers,currentTurn:0,timerSeconds:selectedTimer,status:category==='quick'?'playing':'ready'});
+  setGame({...INITIAL,category,mode,playerCount:count,date:today(),players:nextPlayers,currentTurn:0,timerSeconds:selectedTimer,timeoutCount:timeoutPreset,timeoutVersion:0,status:category==='quick'?'playing':'ready'});
   setNotice('');
   setScreen(category==='quick'?'play':'setup');
  }
@@ -137,7 +138,8 @@ export default function App(){
    return next;
   })
  }
- function undo(){setGame(g=>{
+ function useTimeout(index){setGame(g=>{const p=g.players[index];const limit=Math.max(0,Number(g.timeoutCount)||0);if(!p||p.timeoutsUsed>=limit)return g;return {...g,timeoutVersion:(g.timeoutVersion||0)+1,players:g.players.map((x,i)=>i===index?{...x,timeoutsUsed:(x.timeoutsUsed||0)+1}:x)}})}
+  function undo(){setGame(g=>{
   const events=[...g.events];
   const last=events.pop();
   if(!last)return g;
@@ -217,8 +219,8 @@ export default function App(){
   </section>}
   {screen==='setup'&&<section className="setup"><div className="section-title"><div><small>GAME SETUP</small><h1>{game.mode==='multi'?`${game.playerCount}명 다인 경기 선수 선택`:'선수와 경기 정보를 설정하세요'}</h1></div><input type="date" value={game.date} onChange={e=>setGame(g=>({...g,date:e.target.value}))}/></div><div className={`player-grid ${game.mode}`}>
    {game.players.map((p,i)=><article className={`player-setup ${p.playerId?'selected':''} ${p.ball==='노란색'?'yellow-player':''}`} key={i}><div className={`ball ${p.ball}`}></div><h2>{game.mode==='multi'?`${i+1}번 선수`:i===0?'왼쪽 선수':'오른쪽 선수'}</h2><button type="button" className="player-picker-button" onClick={()=>setPickerIndex(i)}><UserCheck/><span><small>{loadingPlayers?'선수 불러오는 중...':p.playerId?'선택된 선수':'선수 선택'}</small><b>{p.name||'목록에서 선수를 선택하세요'}</b>{p.playerId&&<small className="selected-meta">핸디 {p.handicap||0} · AVG {p.calculatedAvg!=null?Number(p.calculatedAvg).toFixed(3):'-'} · 승률 {p.winRate!=null?`${p.winRate.toFixed(1)}%`:'-'}</small>}</span><em>{p.playerId?`${p.handicap||0}점`:'선택'}</em></button><div className="setup-player-stats"><b>핸디 {p.handicap||0} · AVG {p.playerId&&p.calculatedAvg!=null?Number(p.calculatedAvg).toFixed(3):'-'} · 승률 {p.winRate!=null?`${p.winRate.toFixed(1)}%`:'-'}</b>{game.mode==='single'&&headToHead&&game.players.every(x=>x.playerId)&&<span>상대전적 <strong>{i===0?headToHead.aw:headToHead.bw}승 {i===0?headToHead.bw:headToHead.aw}패</strong><br/>상대 AVG {i===0?headToHead.aAvg:headToHead.bAvg} · HR {i===0?headToHead.ahr:headToHead.bhr}</span>}</div>{game.mode==='single'&&<button type="button" className={`starter-button ${game.currentTurn===i?'active':''}`} disabled={!p.playerId} onClick={()=>setStarter(i)}>{game.currentTurn===i?'선공 · 흰공':'선공으로 선택'}</button>}</article>)}
-   </div>{game.category==='record'&&game.mode==='single'&&<div className="timer-setup"><div><b>턴 타이머</b><span>선수 차례마다 적용할 시간을 선택하세요.</span></div><div className="timer-presets">{[30,35,40,45].map(sec=><button key={sec} className={timerPreset===sec?'active':''} onClick={()=>setTimerPreset(sec)}>{sec}초</button>)}<button className={timerPreset==='custom'?'active':''} onClick={()=>setTimerPreset('custom')}>기타 설정</button></div>{timerPreset==='custom'&&<label className="custom-timer"><input type="number" min="5" max="300" value={customTimer} onChange={e=>setCustomTimer(e.target.value)} placeholder="초 입력"/><span>초</span><small>5초부터 300초까지 입력할 수 있습니다.</small></label>}</div>}<div className="setup-footer"><button onClick={()=>setScreen('mode')}>이전</button><button className="primary" onClick={start}>경기 시작</button></div></section>}
-  {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onFinish={finish} onExit={()=>ask('exit')} avg={avg}/>}
+   </div>{game.category==='record'&&game.mode==='single'&&<div className="timeout-setup"><div><b>타임아웃</b><span>선수별 사용 가능한 횟수를 선택하세요.</span></div><div className="timeout-presets">{[0,1,2,3,4].map(n=><button type="button" key={n} className={timeoutPreset===n?'active':''} onClick={()=>setTimeoutPreset(n)}>{n}개</button>)}</div></div>}{game.category==='record'&&game.mode==='single'&&<div className="timer-setup"><div><b>턴 타이머</b><span>선수 차례마다 적용할 시간을 선택하세요.</span></div><div className="timer-presets">{[30,35,40,45].map(sec=><button key={sec} className={timerPreset===sec?'active':''} onClick={()=>setTimerPreset(sec)}>{sec}초</button>)}<button className={timerPreset==='custom'?'active':''} onClick={()=>setTimerPreset('custom')}>기타 설정</button></div>{timerPreset==='custom'&&<label className="custom-timer"><input type="number" min="5" max="300" value={customTimer} onChange={e=>setCustomTimer(e.target.value)} placeholder="초 입력"/><span>초</span><small>5초부터 300초까지 입력할 수 있습니다.</small></label>}</div>}<div className="setup-footer"><button onClick={()=>setScreen('mode')}>이전</button><button className="primary" onClick={start}>경기 시작</button></div></section>}
+  {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onTimeout={useTimeout} onFinish={finish} onExit={()=>ask('exit')} avg={avg}/>}
   {screen==='result'&&<section className="result result-integrated"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=>{const win=p===winner;return <article key={i} className={`${p.ball==='노란색'?'yellow-result':''}`}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span className={`result-badge ${game.mode==='single'?(win?'win':'loss'):''}`}>{game.mode==='single'?(win?'승':'패'):`${i+1}위`}</span><div className="result-stats"><b>AVG {avg(p)}</b><b>HR {p.hr}</b></div></article>})}</div>{game.mode==='single'&&headToHead&&<div className="result-h2h-live"><b>이번 경기 포함 상대전적</b><span>{game.players[0]?.name} <strong>{headToHead.aw}승</strong> · AVG {headToHead.aAvg} · HR {headToHead.ahr}</span><i>VS</i><span>{game.players[1]?.name} <strong>{headToHead.bw}승</strong> · AVG {headToHead.bAvg} · HR {headToHead.bhr}</span><small>총 {headToHead.total}경기</small></div>}<div className="result-save-area">{game.category==='record'?<button className={`result-save-button ${savedComplete?'completed':''}`} disabled={saving||savedComplete} onClick={()=>ask('save')}>{savedComplete?<><CheckCircle2/> 저장이 완료되었습니다</>:saving?<><Save/> 저장 중...</>:<><Save/> 기록 앱에 저장하기</>}</button>:<button className="result-save-button" onClick={reset}><Play/> 새 경기 시작</button>}<div className="result-return-buttons"><button onClick={()=>ask('return')}>경기로 돌아가기</button><button onClick={()=>ask('home')}>첫 화면으로 가기</button></div></div></section>}
   {dialog&&<div className="confirm-overlay"><section className={`confirm-modal ${dialog}`} role="dialog" aria-modal="true"><button className="confirm-close" onClick={()=>setDialog(null)}><X/></button>{dialog==='postSave'&&<div className="save-return-check"><CheckCircle2/></div>}<h2>{dialog==='save'?'경기 결과를 저장할까요?':dialog==='postSave'?'경기 저장이 완료되었습니다':dialog==='return'?'경기 화면으로 돌아갈까요?':dialog==='exit'?'경기를 나갈까요?':'첫 화면으로 이동할까요?'}</h2><p>{dialog==='save'?<><strong>{countdown}초 후 자동 저장됩니다.</strong><br/>취소하면 결과 화면을 계속 볼 수 있습니다.</>:dialog==='postSave'?<><strong>{countdown}초 후 첫 화면으로 돌아갑니다.</strong><br/>취소하면 마지막 경기 결과를 계속 볼 수 있습니다.</>:dialog==='return'?'경기 결과를 수정할 수 있도록 경기 화면으로 돌아갑니다.':dialog==='exit'?'진행 중인 경기 내용은 기기에 유지됩니다.':'저장하지 않은 결과는 사라질 수 있습니다.'}</p>{['save','postSave'].includes(dialog)&&<div className="confirm-progress"><i/></div>}<div className="confirm-actions"><button onClick={()=>setDialog(null)}>{dialog==='postSave'?'취소하고 결과 계속 보기':'취소'}</button><button className="confirm-primary" onClick={confirmDialog}>{dialog==='save'?'지금 저장하기':dialog==='postSave'?'지금 첫 화면으로 가기':dialog==='return'?'경기로 돌아가기':dialog==='exit'?'경기 나가기':'첫 화면으로 이동'}</button></div></section></div>}
   {appActionDialog&&<div className="app-action-overlay"><section className={`app-action-modal ${appActionDialog}`} role="dialog" aria-modal="true"><button type="button" className="app-action-close" onClick={()=>setAppActionDialog(null)}><X/></button><h2>{appActionDialog==='exit'?'앱을 종료할까요?':'앱을 삭제할까요?'}</h2><p>{appActionDialog==='exit'?<>현재 화면을 닫고 앱을 종료합니다.<br/><strong>기기 정책에 따라 홈 버튼이나 앱 전환 화면이 필요할 수 있습니다.</strong></>:<>앱 삭제는 운영체제 또는 설치한 브라우저에서 진행됩니다.<br/><strong>확인을 누르면 기기에 맞는 삭제 방법을 안내합니다.</strong></>}</p><div className="app-action-buttons"><button type="button" onClick={()=>setAppActionDialog(null)}>취소</button><button type="button" className={appActionDialog==='exit'?'confirm-exit':'confirm-uninstall'} onClick={confirmAppAction}>{appActionDialog==='exit'?'앱 종료하기':'삭제 방법 보기'}</button></div></section></div>}
