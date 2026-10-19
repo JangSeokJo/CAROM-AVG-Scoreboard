@@ -211,9 +211,16 @@ export default function App(){
       <h1>CAROM AVG SCORE</h1>
       <p>실제 경기의 흐름을 그대로, 쉽고 빠르게.</p>
     </div>
-    <div className="start-actions start-actions-row">
-      <button className="primary" onClick={()=>setScreen('mode')}><Play/> 새 경기 시작</button>
-      <button disabled={!localStorage.getItem('carom-score-live')} onClick={()=>setScreen('play')}><RotateCcw/> 진행 중 경기 불러오기</button>
+    <div className="start-actions start-actions-row main-start-panel">
+      <button className="primary new-game-main" onClick={()=>setScreen('mode')}><Play/> 새 경기 시작</button>
+      <section className="manager-intro" aria-label="CAROM AVG 기록 관리 앱 소개">
+        <div className="manager-intro-head"><span className="manager-mark">AVG</span><div><small>CAROM AVG MANAGER</small><h2>회원가입 후 경기 기록을 관리하세요</h2></div></div>
+        <p>선수별 AVG, 승률, 하이런과 상대전적을 한곳에서 확인할 수 있는 기록 관리 앱입니다.</p>
+        <div className="manager-intro-actions">
+          <a className="manager-signup" href="https://jangseokjo.github.io/Billiards-AVG-Manager/" target="_blank" rel="noopener noreferrer"><UserRound/><span><b>회원가입</b><small>기록 관리 앱에서 시작하기</small></span></a>
+          <a className="manager-github" href="https://github.com/JangSeokJo/Billiards-AVG-Manager" target="_blank" rel="noopener noreferrer" title="Billiards-AVG-Manager GitHub"><span><b>Billiards-AVG-Manager</b><small>앱 소개 및 소스 보기</small></span></a>
+        </div>
+      </section>
     </div>
   </section>}
   {screen==='mode'&&<section className="game-choice">
