@@ -553,3 +553,96 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
   }
   .player-setup{grid-template-rows:auto minmax(0,1.35fr) minmax(63px,.78fr) minmax(44px,.48fr)!important}
 }
+
+
+/* EXACT SETUP COMPOSITION V4.6 */
+.setup{
+  display:grid!important;
+  grid-template-rows:minmax(56px,7.5vh) clamp(390px,42vh,505px) clamp(63px,8.2vh,84px) clamp(63px,8.2vh,84px) clamp(84px,10.8vh,114px)!important;
+  align-content:space-between!important;
+  row-gap:0!important;
+  column-gap:0!important;
+  padding:clamp(8px,.9vh,14px) clamp(18px,1.6vw,32px) clamp(8px,.9vh,14px)!important;
+  overflow:hidden!important;
+}
+.player-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:clamp(12px,1vw,20px)!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+}
+.player-setup{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:clamp(10px,1vh,15px) clamp(16px,1.15vw,24px) clamp(10px,1.05vh,15px)!important;
+  gap:clamp(8px,.75vh,11px)!important;
+  overflow:hidden!important;
+}
+.player-setup>h2{flex:0 0 auto!important;width:100%!important;margin:0!important;text-align:center!important}
+.player-setup>.ball{top:clamp(11px,1vh,16px)!important;left:clamp(14px,1.15vw,23px)!important}
+.player-picker-button,
+.setup-player-stats,
+.starter-button{
+  display:flex!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  align-self:stretch!important;
+  box-sizing:border-box!important;
+}
+.player-picker-button{
+  flex:1 1 auto!important;
+  min-height:clamp(122px,16vh,172px)!important;
+  height:auto!important;
+  margin-top:clamp(8px,.75vh,11px)!important;
+  display:grid!important;
+}
+.setup-player-stats{
+  flex:0 0 clamp(82px,10.4vh,112px)!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+}
+.starter-button{
+  flex:0 0 clamp(54px,6.8vh,72px)!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  justify-content:center!important;
+}
+.timeout-setup,.timer-setup{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  align-self:stretch!important;
+  padding:clamp(8px,.8vh,12px) clamp(14px,1vw,20px)!important;
+}
+.timeout-presets button,.timer-presets button{height:clamp(45px,5.7vh,61px)!important}
+.setup-footer{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  align-self:stretch!important;
+  align-items:stretch!important;
+}
+.setup-footer button{height:100%!important;min-height:0!important}
+@media(max-height:850px) and (orientation:landscape){
+  .setup{grid-template-rows:minmax(46px,6.7vh) clamp(315px,39vh,375px) clamp(52px,7.2vh,65px) clamp(52px,7.2vh,65px) clamp(70px,9.5vh,88px)!important}
+  .player-picker-button{min-height:clamp(96px,14vh,128px)!important}
+  .setup-player-stats{flex-basis:clamp(66px,8.7vh,82px)!important}
+  .starter-button{flex-basis:clamp(44px,5.7vh,54px)!important}
+}

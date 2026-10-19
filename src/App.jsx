@@ -217,8 +217,8 @@ export default function App(){
         <div className="manager-intro-head"><span className="manager-mark">AVG</span><div><small>CAROM AVG MANAGER</small><h2>회원가입 후 경기 기록을 관리하세요</h2></div></div>
         <p>선수별 AVG, 승률, 하이런과 상대전적을 한곳에서 확인할 수 있는 기록 관리 앱입니다.</p>
         <div className="manager-intro-actions">
-          <a className="manager-signup" href="https://jangseokjo.github.io/Billiards-AVG-Manager/" target="_blank" rel="noopener noreferrer"><UserRound/><span><b>회원가입</b><small>기록 관리 앱에서 시작하기</small></span></a>
-          <a className="manager-github" href="https://github.com/JangSeokJo/Billiards-AVG-Manager" target="_blank" rel="noopener noreferrer" title="Billiards-AVG-Manager GitHub"><span><b>Billiards-AVG-Manager</b><small>앱 소개 및 소스 보기</small></span></a>
+          <a className="manager-signup" href="https://billiards-avg-manager.pages.dev" target="_blank" rel="noopener noreferrer"><UserRound/><span><b>회원가입</b><small>기록 관리 앱에서 시작하기</small></span></a>
+          <a className="manager-github" href="https://billiards-avg-manager.pages.dev" target="_blank" rel="noopener noreferrer" title="Billiards-AVG-Manager 앱 실행"><span><b>앱 실행하기</b><small>Billiards-AVG-Manager 열기</small></span></a>
         </div>
       </section>
     </div>
