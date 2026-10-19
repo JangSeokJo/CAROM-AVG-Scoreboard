@@ -411,3 +411,58 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
   .setup-player-stats{flex-basis:clamp(68px,9.7vh,88px)!important}
   .setup-footer{min-height:clamp(68px,10vh,88px)!important}
 }
+
+
+/* COMPACT SETUP CARD FLOW V4.3 */
+.setup{
+  grid-template-rows:minmax(58px,8vh) auto minmax(54px,7.5vh) minmax(54px,7.5vh) minmax(76px,10.5vh)!important;
+  gap:clamp(6px,.72vh,10px)!important;
+  padding-bottom:clamp(8px,.9vh,14px)!important;
+}
+.player-grid{
+  height:clamp(430px,46vh,555px)!important;
+  min-height:0!important;
+  max-height:none!important;
+  align-self:start!important;
+}
+.player-setup{
+  display:grid!important;
+  grid-template-rows:auto clamp(94px,13.2vh,142px) clamp(78px,10.8vh,116px) clamp(50px,6.6vh,68px)!important;
+  align-content:start!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:clamp(10px,1.05vh,15px) clamp(14px,1.15vw,23px) clamp(10px,1.1vh,16px)!important;
+  gap:clamp(7px,.75vh,10px)!important;
+}
+.player-setup>h2{align-self:center!important}
+.player-setup>.ball{top:clamp(11px,1.05vh,16px)!important}
+.player-picker-button{
+  min-height:0!important;
+  height:100%!important;
+  margin-top:clamp(8px,.8vh,12px)!important;
+  align-self:stretch!important;
+}
+.setup-player-stats{
+  min-height:0!important;
+  height:100%!important;
+  margin:0!important;
+  align-self:stretch!important;
+}
+.starter-button{
+  min-height:0!important;
+  height:100%!important;
+  margin:0!important;
+  align-self:stretch!important;
+}
+.setup-footer{
+  min-height:clamp(76px,10.5vh,110px)!important;
+  height:100%!important;
+  align-self:stretch!important;
+}
+.setup-footer button{height:100%!important}
+@media(max-height:850px) and (orientation:landscape){
+  .setup{grid-template-rows:minmax(48px,7vh) auto minmax(46px,6.7vh) minmax(46px,6.7vh) minmax(64px,9.4vh)!important}
+  .player-grid{height:clamp(340px,44vh,420px)!important}
+  .player-setup{grid-template-rows:auto clamp(76px,11.5vh,105px) clamp(62px,9.4vh,82px) clamp(42px,5.8vh,52px)!important}
+  .setup-footer{min-height:clamp(64px,9.4vh,82px)!important}
+}
