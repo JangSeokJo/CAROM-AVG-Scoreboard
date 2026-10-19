@@ -152,3 +152,10 @@
  .player-picker-overlay{padding:2vw}.player-picker-modal{width:96vw;height:92vh;border-radius:14px}.player-picker-modal>header{min-height:64px;padding:10px 14px}.player-picker-modal>header small{font-size:10px}.player-picker-modal>header h2{font-size:20px}.player-picker-modal>header .player-count{font-size:12px;padding:6px 10px}.player-picker-modal>header>button{width:38px;height:38px}
  .player-picker-list{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(118px,auto);gap:8px;padding:10px}.player-picker-list>button{min-height:118px;padding:10px 5px;gap:5px;border-radius:10px}.player-picker-list>button>b{font-size:16px}.player-picker-list>button>small{min-height:12px;font-size:10px}.player-picker-list>button>strong{font-size:13px}.player-picker-list>button>em{font-size:15px}.player-picker-modal>footer{padding:9px 12px;font-size:11px}
 }
+
+/* STARTER SELECTION V1.7 */
+.player-setup.starter-selected{border:3px solid #47bfff;box-shadow:0 0 0 .22vw rgba(71,191,255,.2),0 1vw 2vw #0019}
+.starter-button{width:100%;height:3.15vw;min-height:46px;border:1px solid #5790b7;border-radius:.65vw;background:#dceaf5;color:#244c69;font-size:1vw;font-weight:950;cursor:pointer}
+.starter-button:disabled{opacity:.38;cursor:not-allowed}
+.starter-button.active{border-color:#c8d7e2;background:linear-gradient(135deg,#fff,#e7eef4);color:#0c3158;box-shadow:0 0 0 .16vw rgba(45,168,255,.18)}
+.player-setup.starter-selected>h2:after{content:'  ·  선공';color:#1684dc;font-size:.82em}
