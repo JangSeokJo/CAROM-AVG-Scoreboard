@@ -215,96 +215,107 @@ button:disabled{cursor:not-allowed}
 .player-grid{gap:1vw!important}.player-setup{min-height:26vw!important;padding:1vw 1.25vw 1.1vw!important;gap:.5vw!important}.player-setup>h2{margin:0!important;font-size:1.65vw!important}.player-setup>.ball{left:1.2vw!important;top:.9vw!important;width:2.45vw!important;height:2.45vw!important}.player-picker-button{height:5.2vw!important;min-height:72px!important;padding:0 1vw!important}.player-picker-button b{font-size:1.25vw!important}.player-picker-button .selected-meta{font-size:.78vw!important;margin-top:.25vw!important}.player-picker-button em{font-size:1vw!important}.setup-player-stats{margin-top:auto!important;flex:0 0 auto!important;min-height:5.7vw!important;max-height:6.3vw!important;padding:.7vw .9vw!important;font-size:.82vw!important;overflow:hidden!important}.setup-player-stats>b{font-size:1.1vw!important}.setup-player-stats span{font-size:.82vw!important;line-height:1.5!important}.yellow-player .setup-player-stats{background:#fff3a5!important;border:1px solid #cfa900!important;color:#3d3000!important;box-shadow:inset 0 0 .8vw rgba(255,255,255,.5)}.yellow-player .setup-player-stats strong{color:#075fae!important}.starter-button{flex:0 0 3.2vw!important;margin-top:.2vw!important}.timeout-setup{margin:.55vw 0 .75vw;padding:.7vw 1vw;border:1px solid #2a628d;border-radius:.75vw;background:rgba(7,35,59,.88);display:grid;grid-template-columns:1.1fr 2fr;align-items:center;gap:1vw}.timeout-setup>div:first-child{display:flex;flex-direction:column}.timeout-setup b{font-size:1.05vw}.timeout-setup span{color:#9ec9e7;font-size:.72vw}.timeout-presets{display:grid;grid-template-columns:repeat(5,1fr);gap:.55vw}.timeout-presets button{height:3.2vw;min-height:46px;border:1px solid #37749f;border-radius:.6vw;background:#0c3a5c;color:#fff;font-weight:900}.timeout-presets button.active{background:#1689ef;border-color:#6dcbff;box-shadow:0 0 0 .16vw rgba(64,190,255,.22)}
 
 
-/* SETUP SCREEN RATIO OPTIMIZATION V3.7 */
+/* FULLSCREEN SETUP LAYOUT V3.9 */
+html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overflow:hidden}
+.stage{width:100dvw!important;height:100dvh!important;max-width:none!important;max-height:none!important;max-aspect-ratio:none!important}
 .setup{
+  flex:1 1 auto!important;
   min-height:0!important;
+  height:auto!important;
   overflow:hidden!important;
-  padding:.75vw 2vw .7vw!important;
-  gap:.35vw!important;
+  padding:clamp(8px,1.05vh,16px) clamp(16px,1.7vw,34px) clamp(9px,1.1vh,18px)!important;
+  display:grid!important;
+  grid-template-rows:minmax(58px,8.5vh) minmax(0,1fr) minmax(56px,8vh) minmax(56px,8vh) minmax(52px,7vh)!important;
+  gap:clamp(7px,.85vh,12px)!important;
 }
-.setup .section-title{flex:0 0 auto!important;min-height:4.2vw!important}
-.setup .section-title h1{margin:.15vw 0 .55vw!important;font-size:2vw!important}
-.setup .section-title>div>small{font-size:.72vw!important}
-.setup .section-title input{padding:.65vw .85vw!important}
+.setup .section-title{
+  min-height:0!important;
+  height:auto!important;
+  align-self:stretch!important;
+}
+.setup .section-title h1{margin:.2vh 0 0!important;font-size:clamp(24px,min(2.25vw,4vh),42px)!important;line-height:1.08!important}
+.setup .section-title>div>small{font-size:clamp(10px,.72vw,14px)!important}
+.setup .section-title input{height:clamp(44px,5.2vh,60px)!important;padding:0 .85vw!important}
 .player-grid{
-  flex:0 0 auto!important;
-  height:20.7vw!important;
-  min-height:300px!important;
-  max-height:39vh!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
   align-items:stretch!important;
-  gap:1vw!important;
-  margin-bottom:.35vw!important;
+  gap:clamp(10px,1vw,20px)!important;
+  margin:0!important;
 }
 .player-setup{
   min-height:0!important;
   height:100%!important;
-  padding:.7vw 1.2vw .8vw!important;
-  gap:.35vw!important;
+  overflow:hidden!important;
+  padding:clamp(8px,1vh,14px) clamp(13px,1.1vw,22px) clamp(10px,1.15vh,16px)!important;
+  gap:clamp(5px,.7vh,9px)!important;
+  justify-content:flex-start!important;
 }
-.player-setup>h2{font-size:1.5vw!important;line-height:1.15!important;margin:0!important}
-.player-setup>.ball{
-  left:1.2vw!important;
-  top:.75vw!important;
-  width:2.4vw!important;
-  height:2.4vw!important;
-  min-width:38px!important;
-  min-height:38px!important;
-  overflow:visible!important;
-}
+.player-setup>h2{position:static!important;width:100%!important;margin:0!important;text-align:center!important;font-size:clamp(22px,min(1.65vw,2.8vh),32px)!important;line-height:1.15!important;flex:0 0 auto!important}
+.player-setup>.ball{left:clamp(14px,1.15vw,23px)!important;top:clamp(10px,1vh,15px)!important;width:clamp(38px,min(2.65vw,4.7vh),54px)!important;height:clamp(38px,min(2.65vw,4.7vh),54px)!important;min-width:0!important;min-height:0!important}
 .player-picker-button{
-  margin-top:.42vw!important;
-  height:4.7vw!important;
-  min-height:64px!important;
-  flex:0 0 auto!important;
+  flex:0 0 clamp(66px,8.5vh,92px)!important;
+  height:auto!important;
+  min-height:0!important;
+  margin-top:clamp(5px,.6vh,9px)!important;
+  padding:0 clamp(12px,1vw,20px)!important;
 }
+.player-picker-button b{font-size:clamp(17px,min(1.25vw,2.15vh),25px)!important;line-height:1.15!important}
+.player-picker-button .selected-meta{font-size:clamp(10px,min(.76vw,1.35vh),14px)!important;line-height:1.3!important;margin-top:.3vh!important}
+.player-picker-button em{font-size:clamp(14px,min(1vw,1.7vh),19px)!important}
 .setup-player-stats{
+  flex:0 0 clamp(76px,10.7vh,116px)!important;
+  width:100%!important;
+  min-height:0!important;
+  max-height:none!important;
   margin-top:auto!important;
-  min-height:4.6vw!important;
-  max-height:5.15vw!important;
-  padding:.52vw .8vw!important;
+  padding:clamp(7px,.8vh,11px) clamp(11px,.8vw,16px)!important;
+  justify-content:center!important;
+  overflow:hidden!important;
 }
-.starter-button{height:2.95vw!important;min-height:43px!important;flex:0 0 auto!important;margin-top:.15vw!important}
+.setup-player-stats>b{font-size:clamp(15px,min(1.08vw,1.85vh),21px)!important;line-height:1.2!important}
+.setup-player-stats span{font-size:clamp(11px,min(.8vw,1.4vh),15px)!important;line-height:1.45!important;margin-top:.4vh!important}
+.starter-button{
+  flex:0 0 clamp(46px,6.3vh,64px)!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  font-size:clamp(15px,min(1vw,1.7vh),20px)!important;
+}
 .timeout-setup,.timer-setup{
   box-sizing:border-box!important;
-  flex:0 0 4.45vw!important;
   width:100%!important;
-  min-height:60px!important;
-  height:4.45vw!important;
-  margin:.25vw 0!important;
-  padding:.48vw .95vw!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:clamp(6px,.7vh,10px) clamp(11px,.9vw,18px)!important;
   border:1px solid #2a628d!important;
   border-radius:.7vw!important;
   background:rgba(7,35,59,.88)!important;
   display:grid!important;
-  grid-template-columns:1.1fr 2fr!important;
+  grid-template-columns:minmax(220px,1.05fr) minmax(0,2fr)!important;
   align-items:center!important;
-  gap:.8vw!important;
+  gap:clamp(10px,.8vw,16px)!important;
 }
 .timeout-setup>div:first-child,.timer-setup>div:first-child{display:flex!important;flex-direction:column!important;justify-content:center!important}
-.timeout-setup b,.timer-setup b{font-size:.94vw!important}
-.timeout-setup span,.timer-setup span{font-size:.64vw!important}
-.timeout-presets,.timer-presets{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:.45vw!important}
-.timeout-presets button,.timer-presets button{height:2.75vw!important;min-height:40px!important}
+.timeout-setup b,.timer-setup b{font-size:clamp(15px,min(.98vw,1.7vh),20px)!important}
+.timeout-setup span,.timer-setup span{font-size:clamp(10px,min(.66vw,1.15vh),13px)!important}
+.timeout-presets,.timer-presets{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:clamp(6px,.5vw,10px)!important}
+.timeout-presets button,.timer-presets button{height:clamp(38px,5.2vh,54px)!important;min-height:0!important;font-size:clamp(14px,min(.95vw,1.65vh),19px)!important}
 .timer-setup .custom-timer{position:absolute!important;right:2.8vw!important}
 .setup-footer{
-  flex:0 0 3.9vw!important;
-  min-height:56px!important;
-  margin-top:.25vw!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
   align-items:stretch!important;
+  justify-content:flex-end!important;
+  gap:clamp(9px,.8vw,16px)!important;
   position:relative!important;
   z-index:5!important;
 }
-.setup-footer button{height:100%!important;min-height:52px!important}
-@media(max-height:850px) and (orientation:landscape){
-  .setup{padding:.45vw 1.7vw!important}
-  .setup .section-title{min-height:3.5vw!important}
-  .setup .section-title h1{font-size:1.75vw!important;margin:0 0 .25vw!important}
-  .player-grid{height:18.8vw!important;min-height:260px!important;max-height:37vh!important}
-  .player-picker-button{height:4vw!important;min-height:54px!important;margin-top:.3vw!important}
-  .setup-player-stats{min-height:3.9vw!important;max-height:4.35vw!important;padding:.35vw .7vw!important}
-  .starter-button{height:2.55vw!important;min-height:38px!important}
-  .timeout-setup,.timer-setup{height:3.8vw!important;flex-basis:3.8vw!important;min-height:50px!important;margin:.18vw 0!important;padding:.35vw .8vw!important}
-  .timeout-presets button,.timer-presets button{height:2.35vw!important;min-height:34px!important}
-  .setup-footer{height:3.35vw!important;flex-basis:3.35vw!important;min-height:46px!important}
-  .setup-footer button{min-height:44px!important}
+.setup-footer button{height:100%!important;min-height:0!important;width:clamp(180px,14vw,280px)!important;font-size:clamp(15px,min(1.05vw,1.8vh),21px)!important}
+@media(max-aspect-ratio:4/3) and (orientation:landscape){
+  .setup{grid-template-rows:minmax(52px,8vh) minmax(0,1fr) minmax(52px,8vh) minmax(52px,8vh) minmax(48px,7vh)!important}
+  .timeout-setup,.timer-setup{grid-template-columns:minmax(180px,.9fr) minmax(0,2.1fr)!important}
 }
