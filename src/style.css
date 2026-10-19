@@ -319,3 +319,45 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
   .setup{grid-template-rows:minmax(52px,8vh) minmax(0,1fr) minmax(52px,8vh) minmax(52px,8vh) minmax(48px,7vh)!important}
   .timeout-setup,.timer-setup{grid-template-columns:minmax(180px,.9fr) minmax(0,2.1fr)!important}
 }
+
+
+/* PLAYER SELECTION SPACE UTILIZATION V4.0 */
+.setup{
+  grid-template-rows:minmax(58px,8vh) minmax(0,1fr) minmax(54px,7.5vh) minmax(54px,7.5vh) minmax(66px,9vh)!important;
+}
+.player-grid{min-height:0!important;height:auto!important;max-height:none!important}
+.player-setup{padding:clamp(9px,1.1vh,15px) clamp(14px,1.15vw,23px) clamp(11px,1.25vh,17px)!important;gap:clamp(7px,.8vh,11px)!important}
+.player-picker-button{
+  flex:1 1 auto!important;
+  min-height:clamp(118px,18vh,190px)!important;
+  max-height:none!important;
+  margin-top:clamp(8px,.9vh,12px)!important;
+  display:grid!important;
+  grid-template-columns:clamp(42px,3.1vw,64px) minmax(0,1fr) auto!important;
+  align-items:center!important;
+  padding:0 clamp(18px,1.4vw,28px)!important;
+}
+.player-picker-button svg{width:clamp(30px,min(2.2vw,4vh),46px)!important;height:clamp(30px,min(2.2vw,4vh),46px)!important}
+.player-picker-button span{align-items:center!important;text-align:center!important;justify-self:center!important;width:100%!important}
+.player-picker-button span>small:first-child{font-size:clamp(12px,min(.82vw,1.45vh),16px)!important;margin-bottom:.45vh!important}
+.player-picker-button b{font-size:clamp(26px,min(2vw,3.5vh),40px)!important;line-height:1.12!important;text-align:center!important}
+.player-picker-button em{font-size:clamp(17px,min(1.2vw,2.1vh),23px)!important;padding:.7vh .85vw!important;min-width:clamp(66px,5vw,96px)!important}
+.setup-player-stats{
+  flex:0 0 clamp(90px,12.5vh,132px)!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:clamp(9px,1vh,13px) clamp(13px,1vw,20px)!important;
+}
+.setup-player-stats>b{font-size:clamp(17px,min(1.2vw,2.05vh),24px)!important}
+.setup-player-stats span{font-size:clamp(13px,min(.91vw,1.55vh),18px)!important;line-height:1.5!important}
+.starter-button{flex:0 0 clamp(52px,7vh,72px)!important;font-size:clamp(17px,min(1.16vw,2vh),23px)!important}
+.setup-footer{min-height:66px!important}
+.setup-footer button{font-size:clamp(18px,min(1.18vw,2.05vh),24px)!important;font-weight:950!important}
+.setup-footer .primary{background:linear-gradient(135deg,#2acb72,#119652)!important;border:1px solid #69eda0!important;box-shadow:0 .65vw 1.5vw rgba(9,120,62,.32)!important}
+.setup-footer .primary:hover{filter:brightness(1.07)!important}
+@media(max-height:850px) and (orientation:landscape){
+  .setup{grid-template-rows:minmax(50px,7.5vh) minmax(0,1fr) minmax(48px,7vh) minmax(48px,7vh) minmax(58px,8.5vh)!important}
+  .player-picker-button{min-height:clamp(96px,16vh,145px)!important}
+  .setup-player-stats{flex-basis:clamp(74px,10.5vh,96px)!important}
+  .starter-button{flex-basis:clamp(44px,6.2vh,56px)!important}
+}
