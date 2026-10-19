@@ -172,3 +172,19 @@
 .starter-button{flex:0 0 3.1vw!important;margin-top:auto!important}
 .install-app-button{position:absolute;z-index:12;right:1.5vw;top:1.4vw;min-width:13.5vw;height:4.1vw;min-height:58px;padding:0 1.1vw;border:1px solid #64c5ff;border-radius:.75vw;background:linear-gradient(135deg,#1689f2,#1268d8);color:#fff;display:flex;align-items:center;justify-content:center;gap:.65vw;box-shadow:0 .55vw 1.25vw rgba(0,67,145,.35);font-weight:900}.install-app-button svg{width:1.55vw;height:1.55vw}.install-app-button span{display:flex;flex-direction:column;align-items:flex-start}.install-app-button b{font-size:1.05vw}.install-app-button small{font-size:.65vw;color:#d9efff}.install-app-button:active{transform:translateY(2px) scale(.98);filter:brightness(.92)}
 @media(max-width:900px){.player-setup{min-height:330px!important;padding:16px!important}.player-setup>h2{font-size:20px!important}.player-setup>.ball{left:18px!important;top:16px!important;width:32px!important;height:32px!important}.setup-player-stats{min-height:76px!important;max-height:90px!important}.player-picker-button .selected-meta{font-size:10px!important}.install-app-button{right:12px;top:12px;min-width:142px;height:52px}.install-app-button svg{width:22px;height:22px}.install-app-button b{font-size:15px}.install-app-button small{font-size:10px}}
+
+
+/* INSTALLED STATUS + APP EXIT V3.2 */
+.start-app-controls{position:absolute;z-index:14;right:1.5vw;top:1.4vw;display:flex;align-items:center;justify-content:flex-end}
+.start-app-controls .install-app-button{position:static!important;right:auto!important;top:auto!important}
+.installed-app-status,.exit-app-button{min-width:17vw;height:4.1vw;min-height:58px;padding:0 1.1vw;border-radius:.75vw;display:flex;align-items:center;justify-content:center;gap:.7vw;color:#fff;box-shadow:0 .55vw 1.25vw rgba(0,0,0,.24)}
+.installed-app-status{border:1px solid #65dc9d;background:linear-gradient(135deg,#148d52,#0d693e)}
+.exit-app-button{border:1px solid #ff929a;background:linear-gradient(135deg,#d74a56,#ad2e3b);cursor:pointer}
+.installed-app-status svg,.exit-app-button svg{width:1.55vw;height:1.55vw;flex:0 0 auto}
+.installed-app-status span,.exit-app-button span{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+.installed-app-status b,.exit-app-button b{font-size:1vw}.installed-app-status small,.exit-app-button small{font-size:.64vw;color:#dcf8e9}.exit-app-button small{color:#ffe6e8}
+.exit-app-button:active{transform:translateY(2px) scale(.98);filter:brightness(.9)}
+.exit-guide-overlay{position:fixed;inset:0;z-index:650;display:grid;place-items:center;padding:2vw;background:rgba(0,13,26,.8);backdrop-filter:blur(7px)}
+.exit-guide-modal{position:relative;width:min(34vw,560px);min-width:390px;padding:1.8vw;border:1px solid #df6872;border-radius:1vw;background:linear-gradient(155deg,#4b1c25,#241019);box-shadow:0 1.5vw 4vw rgba(0,0,0,.55);text-align:center;color:#fff}
+.exit-guide-close{position:absolute;right:.8vw;top:.8vw;width:2.3vw;height:2.3vw;min-width:36px;min-height:36px;border:1px solid #a95b63;border-radius:50%;background:#36151c;color:#fff}.exit-guide-modal h2{margin:.15vw 0 .8vw;font-size:1.6vw}.exit-guide-modal p{color:#f0d6d9;font-size:.9vw;line-height:1.7}.exit-guide-modal p strong{color:#ffadb4}.exit-guide-ok{width:100%;height:3.5vw;min-height:50px;margin-top:.7vw;border:1px solid #ff929a;border-radius:.65vw;background:#c63d4a;color:#fff;font-weight:900}
+@media(max-width:900px){.start-app-controls{right:12px;top:12px}.installed-app-status,.exit-app-button{min-width:190px;height:52px;padding:0 13px}.installed-app-status svg,.exit-app-button svg{width:22px;height:22px}.installed-app-status b,.exit-app-button b{font-size:14px}.installed-app-status small,.exit-app-button small{font-size:9px}.exit-guide-modal{width:88vw;min-width:0;padding:23px 18px 18px;border-radius:16px}.exit-guide-modal h2{font-size:21px}.exit-guide-modal p{font-size:13px}.exit-guide-ok{height:52px}}
