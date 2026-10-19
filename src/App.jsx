@@ -85,31 +85,32 @@ export default function App(){
   setLoadingPlayers(true);
   const [{data:playerData,error:playerError},{data:matchData,error:matchError}]=await Promise.all([
    supabase.from('players').select('*').eq('active',true).order('name'),
-   supabase.from('matches').select('p1,p2,score1,score2,hr1,hr2,innings')
+   supabase.from('matches').select('p1_player_id,p2_player_id,winner_player_id,p1,p2,ball1,ball2,handicap1,handicap2,score1,score2,hr1,hr2,innings')
   ]);
   setLoadingPlayers(false);
   if(playerError){setNotice(`선수 조회 실패: ${playerError.message}`);return}
-  if(matchError){setNotice(`AVG 조회 실패: ${matchError.message}`);setPlayers(playerData||[]);return}
+  if(matchError){setNotice(`통계 조회 실패: ${matchError.message}`);setPlayers(playerData||[]);return}
   setMatchHistory(matchData||[]);
   const stats=new Map();
-  const add=(name,score,innings,win)=>{
-   const key=String(name||'').trim();
-   const point=Number(score)||0;
-   const inning=Number(innings)||0;
-   if(!key||inning<=0)return;
-   const prev=stats.get(key)||{points:0,innings:0,wins:0,games:0};
-   stats.set(key,{points:prev.points+point,innings:prev.innings+inning,wins:prev.wins+(win?1:0),games:prev.games+1});
+  const add=(playerId,score,innings,hr,isWinner)=>{
+   const key=String(playerId||'');
+   if(!key)return;
+   const prev=stats.get(key)||{points:0,innings:0,games:0,wins:0,hr:0};
+   stats.set(key,{points:prev.points+(Number(score)||0),innings:prev.innings+(Number(innings)||0),games:prev.games+1,wins:prev.wins+(isWinner?1:0),hr:Math.max(prev.hr,Number(hr)||0)});
   };
   (matchData||[]).forEach(m=>{
-   const innings=Math.max(0,Number(m.innings)||0);
-   add(m.p1,m.score1,innings,Number(m.score1)>Number(m.score2));
-   const yellowInnings=Number(m.score2)<Number(m.score1)?Math.max(1,innings-1):innings;
-   add(m.p2,m.score2,yellowInnings,Number(m.score2)>Number(m.score1));
+   const fullInnings=Math.max(0,Number(m.innings)||0);
+   const p1Id=String(m.p1_player_id||'');
+   const p2Id=String(m.p2_player_id||'');
+   const winnerId=String(m.winner_player_id||'');
+   const innings1=m.ball1==='노란색'&&winnerId&&winnerId!==p1Id?Math.max(1,fullInnings-1):fullInnings;
+   const innings2=m.ball2==='노란색'&&winnerId&&winnerId!==p2Id?Math.max(1,fullInnings-1):fullInnings;
+   add(p1Id,m.score1,innings1,m.hr1,winnerId===p1Id);
+   add(p2Id,m.score2,innings2,m.hr2,winnerId===p2Id);
   });
   setPlayers((playerData||[]).map(p=>{
-   const stat=stats.get(String(p.name||'').trim());
-   const calculatedAvg=stat&&stat.innings>0?stat.points/stat.innings:null;
-   return {...p,calculatedAvg,winRate:stat?.games?stat.wins/stat.games*100:null,wins:stat?.wins||0,games:stat?.games||0};
+   const stat=stats.get(String(p.id));
+   return {...p,calculatedAvg:stat&&stat.innings>0?stat.points/stat.innings:null,winRate:stat?.games?stat.wins/stat.games*100:null,wins:stat?.wins||0,losses:stat?.games?stat.games-stat.wins:0,games:stat?.games||0,calculatedHr:stat?.hr||0};
   }));
  }
  function makePlayer(i,mode){return {side:i,playerId:'',name:'',handicap:0,ball:mode==='single'?(i===0?'흰색':'노란색'):'',score:0,hr:0,inningPoints:0,timeoutsUsed:0}}
@@ -125,7 +126,7 @@ export default function App(){
   setNotice('');
   setScreen(category==='quick'?'play':'setup');
  }
- function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:id,name:p?.name||'',handicap:Number(p?.handicap||0),calculatedAvg:p?.calculatedAvg??null,winRate:p?.winRate??null,wins:p?.wins||0,games:p?.games||0,losses:Math.max(0,(p?.games||0)-(p?.wins||0))}:x)}));setPickerIndex(null)}
+ function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:String(p?.id||id),name:p?.name||'',handicap:Number(p?.handicap||0),calculatedAvg:p?.calculatedAvg??null,winRate:p?.winRate??null,wins:p?.wins||0,losses:p?.losses||0,games:p?.games||0,calculatedHr:p?.calculatedHr||0}:x)}));setPickerIndex(null)}
  function setStarter(index){setGame(g=>({...g,currentTurn:index,players:g.players.map((p,i)=>({...p,ball:i===index?'흰색':'노란색'}))}))}
  function start(){if(game.players.some(p=>!p.name)){setNotice('모든 선수를 선택해 주세요.');return}if(new Set(game.players.map(p=>p.playerId)).size!==game.players.length){setNotice('같은 선수를 중복 선택할 수 없습니다.');return}setNotice('');setGame(g=>({...g,status:'playing'}));setScreen('play')}
  function score(index,points){
@@ -163,7 +164,8 @@ export default function App(){
   if(game.category!=='record'||game.mode!=='single'||!supabase)return;
   setSaving(true);
   const [a,b]=game.players;
-  const payload={date:game.date,p1:a.name,ball1:a.ball,score1:a.score,hr1:a.hr,p2:b.name,ball2:b.ball,score2:b.score,hr2:b.hr,innings:game.inning};
+  const winnerPlayer=game.players.find(p=>Number(p.handicap)>0&&Number(p.score)>=Number(p.handicap));
+  const payload={date:game.date,p1_player_id:Number(a.playerId),p1:a.name,ball1:a.ball,handicap1:Number(a.handicap)||0,score1:a.score,hr1:a.hr,p2_player_id:Number(b.playerId),p2:b.name,ball2:b.ball,handicap2:Number(b.handicap)||0,score2:b.score,hr2:b.hr,winner_player_id:winnerPlayer?Number(winnerPlayer.playerId):null,innings:game.inning};
   const {error}=await supabase.from('matches').insert(payload);
   if(error){setNotice(`저장 실패: ${error.message}`);setSaving(false);return}
   setSaving(false);setSavedComplete(true);setDialog('postSave');
@@ -174,14 +176,32 @@ export default function App(){
 
  const winner=useMemo(()=>game.players.reduce((best,p)=>!best||p.score>best.score?p:best,null),[game.players]);
  const headToHead=useMemo(()=>{
-  if(game.players.length<2||!game.players[0]?.name||!game.players[1]?.name)return null;
-  const [a,b]=game.players;let aw=0,bw=0,total=0,ap=0,bp=0,ai=0,bi=0,ahr=0,bhr=0;
-  matchHistory.forEach(m=>{const direct=m.p1===a.name&&m.p2===b.name,reverse=m.p1===b.name&&m.p2===a.name;if(!direct&&!reverse)return;total++;const as=Number(direct?m.score1:m.score2)||0,bs=Number(direct?m.score2:m.score1)||0,inn=Number(m.innings)||0;ap+=as;bp+=bs;ai+=inn;bi+=inn;ahr=Math.max(ahr,Number(direct?m.hr1:m.hr2)||0);bhr=Math.max(bhr,Number(direct?m.hr2:m.hr1)||0);if(as>bs)aw++;else if(bs>as)bw++});
-  if(screen==='result'){total++;ap+=a.score;bp+=b.score;ai+=game.inning;bi+=game.inning;ahr=Math.max(ahr,a.hr);bhr=Math.max(bhr,b.hr);if(a.score>b.score)aw++;else if(b.score>a.score)bw++}
+  if(game.players.length<2||!game.players[0]?.playerId||!game.players[1]?.playerId)return null;
+  const [a,b]=game.players;const aId=String(a.playerId),bId=String(b.playerId);let aw=0,bw=0,total=0,ap=0,bp=0,ai=0,bi=0,ahr=0,bhr=0;
+  matchHistory.forEach(m=>{
+   const p1Id=String(m.p1_player_id||''),p2Id=String(m.p2_player_id||'');
+   const direct=p1Id===aId&&p2Id===bId,reverse=p1Id===bId&&p2Id===aId;
+   if(!direct&&!reverse)return;
+   total++;
+   const aIsP1=direct;
+   const as=Number(aIsP1?m.score1:m.score2)||0,bs=Number(aIsP1?m.score2:m.score1)||0;
+   const aBall=aIsP1?m.ball1:m.ball2,bBall=aIsP1?m.ball2:m.ball1;
+   const winnerId=String(m.winner_player_id||''),full=Math.max(0,Number(m.innings)||0);
+   const aInn=aBall==='노란색'&&winnerId&&winnerId!==aId?Math.max(1,full-1):full;
+   const bInn=bBall==='노란색'&&winnerId&&winnerId!==bId?Math.max(1,full-1):full;
+   ap+=as;bp+=bs;ai+=aInn;bi+=bInn;ahr=Math.max(ahr,Number(aIsP1?m.hr1:m.hr2)||0);bhr=Math.max(bhr,Number(aIsP1?m.hr2:m.hr1)||0);
+   if(winnerId===aId)aw++;else if(winnerId===bId)bw++;
+  });
+  if(screen==='result'&&!savedComplete){
+   total++;const winnerPlayer=game.players.find(p=>Number(p.handicap)>0&&Number(p.score)>=Number(p.handicap));
+   const winnerId=String(winnerPlayer?.playerId||'');const full=Math.max(0,Number(game.inning)||0);
+   const aInn=a.ball==='노란색'&&winnerId&&winnerId!==aId?Math.max(1,full-1):full;
+   const bInn=b.ball==='노란색'&&winnerId&&winnerId!==bId?Math.max(1,full-1):full;
+   ap+=Number(a.score)||0;bp+=Number(b.score)||0;ai+=aInn;bi+=bInn;ahr=Math.max(ahr,Number(a.hr)||0);bhr=Math.max(bhr,Number(b.hr)||0);
+   if(winnerId===aId)aw++;else if(winnerId===bId)bw++;
+  }
   return {total,aw,bw,aAvg:ai?(ap/ai).toFixed(3):'-',bAvg:bi?(bp/bi).toFixed(3):'-',ahr,bhr};
- },[matchHistory,game.players,game.inning,screen]);
-
-
+ },[matchHistory,game.players,game.inning,screen,savedComplete]);
  return <div className="app"><div className="stage">
   {screen!=='play'&&<header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>}
   {notice&&<div className="notice">{notice}</div>}
