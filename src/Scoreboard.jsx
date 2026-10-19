@@ -56,12 +56,20 @@ function InningHistory({events,players,currentInning,quick,scrollRef}){
   const scoreEvents=events.filter(e=>e.type==='score'||(!e.type&&e.playerIndex>=0));
   if(quick)return scoreEvents.map((e,i)=>({key:e.id,inning:i+1,white:e.playerIndex===0?e.points:'',yellow:e.playerIndex===1?e.points:'',name:e.playerName,total:e.total}));
   const map=new Map();
-  events.forEach(e=>{if((e.type==='score'||e.type==='turn'||!e.type)&&Number(e.inning)>0&&!map.has(Number(e.inning)))map.set(Number(e.inning),{inning:Number(e.inning),white:0,yellow:0})});
-  scoreEvents.forEach(e=>{if(!map.has(Number(e.inning)))map.set(Number(e.inning),{inning:Number(e.inning),white:0,yellow:0});const row=map.get(Number(e.inning));if(e.playerIndex===whiteIndex)row.white+=Number(e.points)||0;if(e.playerIndex===yellowIndex)row.yellow+=Number(e.points)||0});
+  events.forEach(e=>{
+   if((e.type==='score'||e.type==='turn'||!e.type)&&Number(e.inning)>0&&!map.has(Number(e.inning)))map.set(Number(e.inning),{inning:Number(e.inning),white:0,yellow:0});
+  });
+  scoreEvents.forEach(e=>{
+   if(!map.has(Number(e.inning)))map.set(Number(e.inning),{inning:Number(e.inning),white:0,yellow:0});
+   const row=map.get(Number(e.inning));
+   if(e.playerIndex===whiteIndex)row.white+=Number(e.points)||0;
+   if(e.playerIndex===yellowIndex)row.yellow+=Number(e.points)||0;
+  });
   if(!map.has(currentInning))map.set(currentInning,{inning:currentInning,white:0,yellow:0});
   return [...map.values()].sort((a,b)=>a.inning-b.inning);
  },[events,currentInning,quick,whiteIndex,yellowIndex]);
  if(quick)return <div className="sb-history"><div className="sb-history-head"><b>입력 이력</b><span>과거 → 최신</span></div><div className="sb-history-table" ref={scrollRef}><div className="sb-history-row title"><span>순서</span><span>선수</span><span>득점</span><span>누적</span></div>{rows.map(r=><div className="sb-history-row" key={r.key}><span>{r.inning}</span><span>{r.name}</span><b>{r.white!==''?r.white:r.yellow}</b><span>{r.total??'-'}</span></div>)}</div></div>;
  return <div className="inning-history"><div className="inning-history-title"><b>이닝별 득점</b><span>최신 이닝이 아래쪽에 표시됩니다.</span></div><div className="inning-history-scroll" ref={scrollRef}><div className="inning-history-head"><div className="white-head"><small>흰공</small><b>{players[whiteIndex]?.name||'선수'}</b></div><div className="inning-head">이닝</div><div className="yellow-head"><small>노란공</small><b>{players[yellowIndex]?.name||'선수'}</b></div></div>{rows.map(r=><div className={`inning-history-row ${r.inning===currentInning?'current':''}`} key={r.inning}><strong className="white-point">{r.white}</strong><span>{r.inning}</span><strong className="yellow-point">{r.yellow}</strong></div>)}</div></div>
 }
+
 function MultiScoreboard({game,onScore,onUndo,onFinish,onExit}){return <section className="multi-score-screen"><button className="exit-game" onClick={onExit}><ArrowLeft/> 경기 나가기</button><div className="multi-title"><small>QUICK START</small><h1>{game.playerCount}명 다인 경기</h1></div><div className={`multi-cards count-${game.playerCount}`}>{game.players.map((p,i)=><article key={i}><small>선수 {i+1}</small><h2>{p.name}</h2><div className="score-adjust"><button onClick={()=>onScore(i,-1)}><Minus/></button><span>점수 조정</span><button onClick={()=>onScore(i,1)}><Plus/></button></div><strong>{p.score}</strong><div className="multi-point-buttons"><button className="plus1" onClick={()=>onScore(i,1)}><Plus/>1점</button><button className="plus2" onClick={()=>onScore(i,2)}><Plus/>2점</button></div></article>)}</div><div className="multi-actions"><button onClick={onUndo}><Undo2/> 실행 취소</button><button className="finish-small" onClick={onFinish}>경기 종료</button></div></section>}
