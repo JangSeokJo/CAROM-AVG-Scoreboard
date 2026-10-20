@@ -103,98 +103,15 @@ button:disabled{cursor:not-allowed}
 }
 
 /* INNING HISTORY HEADER OVERLAP FIX V4.9 */
-.sb-center{
-  min-height:0!important;
-  overflow:hidden!important;
-}
-.inning-history{
-  min-height:0!important;
-  height:100%!important;
-  display:grid!important;
-  grid-template-rows:clamp(44px,3.25vw,62px) minmax(0,1fr)!important;
-  overflow:hidden!important;
-  position:relative!important;
-  align-self:stretch!important;
-}
-.inning-history-title{
-  position:relative!important;
-  z-index:5!important;
-  min-height:0!important;
-  height:auto!important;
-  padding:0 clamp(10px,.72vw,15px)!important;
-  display:flex!important;
-  align-items:center!important;
-  flex:initial!important;
-  background:#071f35!important;
-  border-bottom:1px solid #2a638d!important;
-  overflow:hidden!important;
-}
-.inning-history-title b{
-  display:block!important;
-  margin:0!important;
-  font-size:clamp(18px,1.28vw,26px)!important;
-  line-height:1.15!important;
-  white-space:nowrap!important;
-}
-.inning-history-scroll{
-  min-height:0!important;
-  height:100%!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  position:relative!important;
-  scrollbar-gutter:stable!important;
-  isolation:isolate!important;
-}
-.inning-history-head{
-  position:sticky!important;
-  top:0!important;
-  z-index:4!important;
-  min-height:clamp(46px,3vw,58px)!important;
-  height:clamp(46px,3vw,58px)!important;
-  background:#092943!important;
-  box-shadow:0 2px 0 #2a638d!important;
-  transform:none!important;
-}
-.inning-history-head>div{
-  min-height:0!important;
-  padding:clamp(4px,.32vw,7px)!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:2px!important;
-  overflow:hidden!important;
-}
-.inning-history-head small{
-  display:block!important;
-  font-size:clamp(9px,.55vw,12px)!important;
-  line-height:1!important;
-  white-space:nowrap!important;
-}
-.inning-history-head b{
-  display:block!important;
-  max-width:100%!important;
-  margin:0!important;
-  font-size:clamp(12px,.76vw,16px)!important;
-  line-height:1.1!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-}
-.inning-head{
-  flex-direction:row!important;
-  font-size:clamp(12px,.82vw,17px)!important;
-  line-height:1!important;
-}
-.inning-history-row{
-  min-height:clamp(38px,2.55vw,50px)!important;
-  height:clamp(38px,2.55vw,50px)!important;
-  position:relative!important;
-  z-index:1!important;
-}
-@media(max-height:850px) and (orientation:landscape){
-  .inning-history{grid-template-rows:40px minmax(0,1fr)!important}
-  .inning-history-title b{font-size:18px!important}
-  .inning-history-head{min-height:42px!important;height:42px!important}
-  .inning-history-row{min-height:36px!important;height:36px!important}
-}
+.sb-center{min-height:0!important;overflow:hidden!important}
+.inning-history{min-height:0!important;height:100%!important;display:grid!important;grid-template-rows:clamp(44px,3.25vw,62px) minmax(0,1fr)!important;overflow:hidden!important;position:relative!important;align-self:stretch!important}
+.inning-history-title{position:relative!important;z-index:5!important;min-height:0!important;height:auto!important;padding:0 clamp(10px,.72vw,15px)!important;display:flex!important;align-items:center!important;flex:initial!important;background:#071f35!important;border-bottom:1px solid #2a638d!important;overflow:hidden!important}
+.inning-history-title b{display:block!important;margin:0!important;font-size:clamp(18px,1.28vw,26px)!important;line-height:1.15!important;white-space:nowrap!important}
+.inning-history-scroll{min-height:0!important;height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;position:relative!important;scrollbar-gutter:stable!important;isolation:isolate!important}
+.inning-history-head{position:sticky!important;top:0!important;z-index:4!important;min-height:clamp(46px,3vw,58px)!important;height:clamp(46px,3vw,58px)!important;background:#092943!important;box-shadow:0 2px 0 #2a638d!important;transform:none!important}
+.inning-history-head>div{min-height:0!important;padding:clamp(4px,.32vw,7px)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;overflow:hidden!important}
+.inning-history-head small{display:block!important;font-size:clamp(9px,.55vw,12px)!important;line-height:1!important;white-space:nowrap!important}
+.inning-history-head b{display:block!important;max-width:100%!important;margin:0!important;font-size:clamp(12px,.76vw,16px)!important;line-height:1.1!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.inning-head{flex-direction:row!important;font-size:clamp(12px,.82vw,17px)!important;line-height:1!important}
+.inning-history-row{min-height:clamp(38px,2.55vw,50px)!important;height:clamp(38px,2.55vw,50px)!important;position:relative!important;z-index:1!important}
+@media(max-height:850px) and (orientation:landscape){.inning-history{grid-template-rows:40px minmax(0,1fr)!important}.inning-history-title b{font-size:18px!important}.inning-history-head{min-height:42px!important;height:42px!important}.inning-history-row{min-height:36px!important;height:36px!important}}

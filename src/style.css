@@ -702,3 +702,119 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
   .player-picker-button .player-main-meta{font-size:clamp(15px,min(1.08vw,1.75vh),19px)!important}
   .timeout-presets button,.timer-presets button{height:clamp(44px,6.1vh,56px)!important}
 }
+
+/* RESULT EMPHASIS + START HERO BACKGROUND V5.0 */
+.result-integrated{
+  padding-bottom:clamp(14px,1.6vh,24px)!important;
+}
+.result-grid article{
+  position:relative!important;
+}
+.result-badge{
+  min-width:clamp(58px,4.1vw,82px)!important;
+  min-height:clamp(58px,4.1vw,82px)!important;
+  padding:0!important;
+  border-radius:clamp(14px,.9vw,18px)!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:clamp(30px,2.15vw,44px)!important;
+  line-height:1!important;
+  font-weight:950!important;
+  box-shadow:0 .45vw 1vw rgba(0,0,0,.2)!important;
+}
+.result-badge.win{
+  background:linear-gradient(145deg,#24c977,#0f914e)!important;
+  border:2px solid #7af0ad!important;
+  color:#fff!important;
+}
+.result-badge.loss{
+  background:linear-gradient(145deg,#f04b5a,#c3293b)!important;
+  border:2px solid #ff929b!important;
+  color:#fff!important;
+}
+.result-highlight-message{
+  width:72%;
+  min-height:clamp(58px,5.5vw,86px);
+  margin:.65vw auto 0;
+  padding:.7vw 1.2vw;
+  border:1px solid #377aa6;
+  border-radius:.72vw;
+  background:linear-gradient(135deg,rgba(10,64,99,.96),rgba(7,42,69,.96));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  gap:.24vw;
+  box-shadow:inset 0 0 1.3vw rgba(57,181,240,.06);
+}
+.result-highlight-message b{
+  color:#fff;
+  font-size:clamp(17px,1.12vw,23px);
+}
+.result-highlight-message span{
+  color:#b9d9ed;
+  font-size:clamp(11px,.72vw,15px);
+}
+.result-save-area{
+  margin:.7vw auto 0!important;
+  gap:.72vw!important;
+}
+.result-save-button{
+  height:clamp(92px,7vw,132px)!important;
+  min-height:92px!important;
+  font-size:clamp(24px,1.7vw,34px)!important;
+  border-radius:.9vw!important;
+  box-shadow:0 .7vw 1.5vw rgba(0,65,145,.3)!important;
+}
+.result-save-button svg{
+  width:clamp(29px,2vw,40px)!important;
+  height:clamp(29px,2vw,40px)!important;
+}
+.start-centered{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+}
+.start-centered::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background-image:
+    linear-gradient(90deg,rgba(2,24,44,.94) 0%,rgba(3,34,60,.76) 46%,rgba(3,31,54,.92) 100%),
+    url('/start-player-bg.jpg');
+  background-size:cover;
+  background-position:center 38%;
+  background-repeat:no-repeat;
+}
+.start-centered::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(42,159,231,.20),transparent 34%),
+    linear-gradient(180deg,rgba(4,36,63,.05),rgba(3,24,43,.38));
+  pointer-events:none;
+}
+.start-centered .start-hero{
+  background:transparent!important;
+  border:0!important;
+  text-shadow:0 .2vw .8vw rgba(0,0,0,.65);
+}
+.start-centered .start-hero .balls{
+  filter:drop-shadow(0 .7vw 1vw rgba(0,0,0,.7))!important;
+}
+.start-centered .main-start-panel{
+  position:relative;
+}
+.start-centered .new-game-main,
+.start-centered .manager-intro{
+  backdrop-filter:blur(8px);
+}
+@media(max-height:850px) and (orientation:landscape){
+  .result-badge{min-width:52px!important;min-height:52px!important;font-size:28px!important}
+  .result-highlight-message{min-height:52px;margin-top:6px}
+  .result-save-button{height:78px!important;min-height:78px!important}
+}
