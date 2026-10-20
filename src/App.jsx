@@ -214,10 +214,9 @@ export default function App(){
   return {total,aw,bw,aAvg:ai?(ap/ai).toFixed(3):'-',bAvg:bi?(bp/bi).toFixed(3):'-',ahr,bhr};
  },[matchHistory,game.players,game.inning,screen,savedComplete]);
  return <div className="app"><div className="stage">
-  {screen==='start'&&<LanguageSelector/>}
   {screen!=='play'&&<header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>}
   {notice&&<div className="notice">{notice}</div>}
-  {screen==='start'&&<section className="start start-centered"><div className="start-app-controls">{isStandalone?<><button type="button" className="exit-app-button" onClick={requestAppExit}><X/><span><b>앱 종료하기</b><small>설치된 앱 닫기</small></span></button><button type="button" className="uninstall-app-button" onClick={requestAppUninstall}><Download/><span><b>앱 삭제</b><small>삭제 방법 확인</small></span></button></>:installedKnown?<div className="installed-app-status"><CheckCircle2/><span><b>앱이 설치되어 있습니다</b><small>홈 화면에서 전체 화면으로 실행할 수 있습니다</small></span></div>:<button type="button" className="install-app-button" onClick={installApp}><Download/><span><b>앱 설치</b><small>전체 화면으로 사용</small></span></button>}</div>
+  {screen==='start'&&<section className="start start-centered"><LanguageSelector/><div className="start-app-controls">{isStandalone?<><button type="button" className="exit-app-button" onClick={requestAppExit}><X/><span><b>앱 종료하기</b><small>설치된 앱 닫기</small></span></button><button type="button" className="uninstall-app-button" onClick={requestAppUninstall}><Download/><span><b>앱 삭제</b><small>삭제 방법 확인</small></span></button></>:installedKnown?<div className="installed-app-status"><CheckCircle2/><span><b>앱이 설치되어 있습니다</b><small>홈 화면에서 전체 화면으로 실행할 수 있습니다</small></span></div>:<button type="button" className="install-app-button" onClick={installApp}><Download/><span><b>앱 설치</b><small>전체 화면으로 사용</small></span></button>}</div>
     <div className="hero start-hero">
       <div className="balls">⚪ 🟡 🔴</div>
       <h1>CAROM AVG SCORE</h1>

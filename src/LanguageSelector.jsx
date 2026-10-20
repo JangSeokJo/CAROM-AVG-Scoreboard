@@ -11,7 +11,7 @@ const options=[
 export default function LanguageSelector(){
  const {language,setLanguage}=useLanguage();const [open,setOpen]=useState(false);const rootRef=useRef(null);const current=options.find(x=>x.code===language)||options[0];
  useEffect(()=>{const close=e=>{if(!rootRef.current?.contains(e.target))setOpen(false)};document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close)},[]);
- return <div className="language-selector" ref={rootRef}>
+ return <div className="language-selector" ref={rootRef} data-no-translate="true">
   <button type="button" className="language-trigger" onClick={()=>setOpen(v=>!v)} aria-haspopup="listbox" aria-expanded={open} aria-label="언어 선택">
    <Languages className="language-icon"/><span className="language-flag" aria-hidden="true">{current.flag}</span><b>{current.label}</b><ChevronDown className={open?'open':''}/>
   </button>
