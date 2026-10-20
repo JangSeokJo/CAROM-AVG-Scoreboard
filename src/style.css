@@ -824,3 +824,40 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
 .start-centered .main-start-panel{position:relative!important;transform:translateY(clamp(20px,2.8vh,36px))!important}
 .game-end-delay-overlay{position:fixed;inset:0;z-index:760;display:grid;place-items:center;padding:2vw;background:rgba(0,17,33,.76);backdrop-filter:blur(8px)}.game-end-delay-card{position:relative;width:min(34vw,560px);min-width:410px;padding:1.8vw 2vw 1.55vw;border:2px solid #6bcfff;border-radius:1.15vw;background:linear-gradient(155deg,#f9fcff,#dceeff);color:#0b3559;text-align:center;box-shadow:0 1.6vw 4vw rgba(0,0,0,.5)}.game-end-delay-card.yellow{border-color:#f3ce3d;background:linear-gradient(155deg,#fff9c7,#f4dc68);color:#483900}.game-end-delay-card>.ball{width:4.2vw;height:4.2vw;min-width:60px;min-height:60px;margin:0 auto .65vw}.game-end-delay-card h2{margin:.2vw 0 .35vw;font-size:1.85vw}.game-end-delay-card>strong{display:block;font-size:4.6vw;line-height:1;color:#0c5f9b}.game-end-delay-card p{font-size:.82vw;line-height:1.55}.game-end-delay-count{display:flex;align-items:baseline;justify-content:center;gap:.2vw}.game-end-delay-count b{font-size:2.35vw;color:#e03d4d}.game-end-delay-progress{height:8px;margin:.45vw 0 .9vw;background:rgba(7,62,98,.15);overflow:hidden}.game-end-delay-progress i{display:block;height:100%;background:linear-gradient(90deg,#35d47f,#1689ef)}.game-end-delay-card button{width:100%;height:3.45vw;min-height:50px;border:0;border-radius:.65vw;background:#0c6db5;color:#fff;font-weight:950}
 @media(max-height:850px) and (orientation:landscape){.start-centered .main-start-panel{transform:translateY(clamp(12px,1.8vh,20px))!important}}
+
+/* STARTER BUTTON COMPACT CENTERED V5.4 */
+.player-setup{
+  row-gap:clamp(8px,.8vh,12px)!important;
+}
+.starter-button{
+  flex:0 0 auto!important;
+  width:100%!important;
+  height:clamp(46px,5.4vh,60px)!important;
+  min-height:46px!important;
+  max-height:60px!important;
+  margin:0!important;
+  padding:0 clamp(12px,1vw,20px)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  line-height:1.1!important;
+  font-size:clamp(16px,min(1.05vw,1.75vh),21px)!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+  border-radius:clamp(9px,.58vw,13px)!important;
+  box-sizing:border-box!important;
+}
+.starter-button.active{
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+@media(max-height:850px) and (orientation:landscape){
+  .starter-button{
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    font-size:16px!important;
+  }
+}
