@@ -147,3 +147,30 @@ button:disabled{cursor:not-allowed}
 .multi-reference-layout.count-3 .multi-board-grid{grid-template-areas:"p1 center p2" "p3 center empty"}.multi-reference-layout.count-3 .multi-control-center{grid-area:center}.multi-reference-layout.count-4 .multi-board-grid{grid-template-areas:"p1 center p2" "p3 center p4"}
 .multi-reference-layout.count-5 .multi-board-grid{grid-template-areas:"p1 center p2" "p3 p5 p4"}.multi-reference-layout.count-5 .multi-control-center{grid-area:center}.multi-reference-layout.count-5 .multi-player-panel.player-5{grid-area:p5}.multi-reference-layout.count-5 .multi-player-panel{grid-template-rows:auto auto 1fr auto}.multi-reference-layout.count-5 .multi-player-panel.player-5 .multi-big-score{font-size:7vw}.multi-reference-layout.count-5 .multi-control-center{border-radius:.7vw}
 @media(max-width:900px){.multi-player-panel header{min-height:30px}.multi-player-panel header b{font-size:14px}.multi-main-adjust button{min-height:30px}.multi-quick-points button{min-height:25px;font-size:11px}.multi-control-actions button{font-size:10px}.multi-camera b{font-size:10px}.multi-camera small{font-size:9px}}
+
+
+/* QUICK START 1:1: remove inning history and expand camera */
+.scoreboard-screen.quick-single .sb-center{
+  grid-template-rows:minmax(0,1fr)!important;
+  gap:0!important;
+}
+.scoreboard-screen.quick-single .sb-camera{
+  width:100%;
+  height:100%;
+  min-height:0!important;
+  margin:0!important;
+  border-radius:.9vw!important;
+}
+.scoreboard-screen.quick-single .sb-camera svg{
+  width:clamp(48px,4.2vw,86px)!important;
+  height:clamp(48px,4.2vw,86px)!important;
+}
+.scoreboard-screen.quick-single .sb-camera b{
+  font-size:clamp(16px,1.25vw,26px)!important;
+}
+.scoreboard-screen.quick-single .sb-camera span{
+  font-size:clamp(12px,.82vw,17px)!important;
+}
+@media(max-height:850px) and (orientation:landscape){
+  .scoreboard-screen.quick-single .sb-center{grid-template-rows:minmax(0,1fr)!important}
+}
