@@ -818,3 +818,21 @@ html,body,#root,.app{width:100%;height:100%;min-width:100%;min-height:100%;overf
   .result-highlight-message{min-height:52px;margin-top:6px}
   .result-save-button{height:78px!important;min-height:78px!important}
 }
+
+/* START ACTIONS LOWER POSITION + GAME END DELAY V5.2 */
+.start-centered .main-start-panel{
+  position:relative!important;
+  transform:translateY(clamp(20px,2.8vh,36px))!important;
+}
+.game-end-delay-overlay{position:fixed;inset:0;z-index:760;display:grid;place-items:center;padding:2vw;background:rgba(0,17,33,.76);backdrop-filter:blur(8px)}
+.game-end-delay-card{position:relative;width:min(34vw,560px);min-width:410px;padding:1.8vw 2vw 1.55vw;border:2px solid #6bcfff;border-radius:1.15vw;background:linear-gradient(155deg,#f9fcff,#dceeff);color:#0b3559;text-align:center;box-shadow:0 1.6vw 4vw rgba(0,0,0,.5),0 0 2vw rgba(65,190,255,.25)}
+.game-end-delay-card.yellow{border-color:#f3ce3d;background:linear-gradient(155deg,#fff9c7,#f4dc68);color:#483900}
+.game-end-delay-card>.ball{width:4.2vw;height:4.2vw;min-width:60px;min-height:60px;margin:0 auto .65vw}
+.game-end-delay-card>small{display:block;color:#1688cf;font-size:.72vw;font-weight:950;letter-spacing:.15em}.game-end-delay-card.yellow>small{color:#876400}
+.game-end-delay-card h2{margin:.2vw 0 .35vw;font-size:1.85vw;line-height:1.1}.game-end-delay-card>strong{display:block;font-size:4.6vw;line-height:1;color:#0c5f9b}.game-end-delay-card.yellow>strong{color:#735600}
+.game-end-delay-card p{margin:.45vw 0 .7vw;font-size:.82vw;line-height:1.55;color:#41647e}.game-end-delay-card.yellow p{color:#675817}
+.game-end-delay-count{display:flex;align-items:baseline;justify-content:center;gap:.2vw}.game-end-delay-count b{font-size:2.35vw;color:#e03d4d}.game-end-delay-count span{font-size:.8vw;font-weight:900}
+.game-end-delay-progress{height:8px;margin:.45vw 0 .9vw;border-radius:99px;background:rgba(7,62,98,.15);overflow:hidden}.game-end-delay-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#35d47f,#1689ef);transition:width .3s linear}
+.game-end-delay-card button{width:100%;height:3.45vw;min-height:50px;border:0;border-radius:.65vw;background:#0c6db5;color:#fff;font-weight:950;font-size:.95vw}.game-end-delay-card.yellow button{background:#8c6900}
+@media(max-height:850px) and (orientation:landscape){.start-centered .main-start-panel{transform:translateY(clamp(12px,1.8vh,20px))!important}}
+@media(max-width:900px){.start-centered .main-start-panel{transform:translateY(12px)!important}.game-end-delay-card{width:88vw;min-width:0;padding:22px 18px 18px;border-radius:16px}.game-end-delay-card h2{font-size:23px}.game-end-delay-card>strong{font-size:58px}.game-end-delay-card p{font-size:12px}.game-end-delay-count b{font-size:30px}.game-end-delay-count span{font-size:11px}.game-end-delay-card button{height:54px;font-size:14px}}
