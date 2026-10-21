@@ -207,3 +207,10 @@ button:disabled{cursor:not-allowed}
 .quick-score-tap{min-width:0;min-height:0;border:0;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;overflow:hidden}.quick-score-tap>strong{font-size:8vw;line-height:.82;font-weight:500}.quick-score-tap:active{background:rgba(255,255,255,.12)}.quick-multi.count-5 .quick-score-tap>strong{font-size:6.2vw}
 .quick-player-card>strong{display:none!important}
 @media(max-height:850px) and (orientation:landscape){.game-clock{min-height:36px}.scoreboard-screen.record-single .sb-center{gap:6px!important;grid-template-rows:36px 58px minmax(0,1fr) 76px minmax(0,.62fr)!important}.scoreboard-screen.record-single .inning-history-title{min-height:30px!important}.scoreboard-screen.record-single .inning-history-row{min-height:27px!important;height:27px!important}}
+
+
+/* QUICK SCORE FEED V2: 2-second grouped scoring, larger outlined text */
+.score-feed{width:clamp(46px,3.2vw,68px)!important;right:clamp(10px,.8vw,17px)!important}
+.score-feed small{font-size:clamp(19px,1.28vw,28px)!important;line-height:1.12!important;font-weight:1000!important;color:#ffffff!important;-webkit-text-stroke:1.2px #000!important;paint-order:stroke fill!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 2px 3px rgba(0,0,0,.65)!important}
+.sb-player.yellow .score-feed small,.tone-yellow .score-feed small,.tone-green .score-feed small,.tone-orange .score-feed small,.tone-blue .score-feed small{color:#fff!important;-webkit-text-stroke:1.2px #000!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 2px 3px rgba(0,0,0,.65)!important}
+.scoreboard-screen.quick-single .turn-score-box{display:none!important}
