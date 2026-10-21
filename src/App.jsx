@@ -4,6 +4,8 @@ import {CheckCircle2,Download,Users,UserRound,Play,Save,RotateCcw,X,UserCheck} f
 import Scoreboard from './Scoreboard.jsx';
 import './Scoreboard.css';
 import LanguageSelector from './LanguageSelector.jsx';
+import SignupModal from './SignupModal.jsx';
+import ManagerQrModal from './ManagerQrModal.jsx';
 
 const URL=import.meta.env.VITE_SUPABASE_URL||'';
 const KEY=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY||import.meta.env.VITE_SUPABASE_ANON_KEY||'';
@@ -11,9 +13,12 @@ const supabase=URL&&KEY?createClient(URL,KEY):null;
 const today=()=>new Date().toISOString().slice(0,10);
 const INITIAL={category:'record',mode:'single',playerCount:3,date:today(),players:[],inning:1,currentTurn:0,timerSeconds:40,events:[],timeoutCount:2,timeoutVersion:0,status:'ready'};
 const safeNum=v=>Math.max(0,Number(v)||0);
+const MANAGER_APP_URL=import.meta.env.VITE_MANAGER_APP_URL||'https://billiards-avg-manager.pages.dev';
 
 export default function App(){
  const [screen,setScreen]=useState('start');
+ const [signupOpen,setSignupOpen]=useState(false);
+ const [managerQrOpen,setManagerQrOpen]=useState(false);
  const [players,setPlayers]=useState([]);
  const [matchHistory,setMatchHistory]=useState([]);
  const [loadingPlayers,setLoadingPlayers]=useState(false);
@@ -228,8 +233,8 @@ export default function App(){
         <div className="manager-intro-head"><span className="manager-mark">AVG</span><div><small>CAROM AVG MANAGER</small><h2>회원가입 후 경기 기록을 관리하세요</h2></div></div>
         <p>선수별 AVG, 승률, 하이런과 상대전적을 한곳에서 확인할 수 있는 기록 관리 앱입니다.</p>
         <div className="manager-intro-actions">
-          <a className="manager-signup" href="https://billiards-avg-manager.pages.dev" target="_blank" rel="noopener noreferrer"><UserRound/><span><b>회원가입</b><small>기록 관리 앱에서 시작하기</small></span></a>
-          <a className="manager-github" href="https://billiards-avg-manager.pages.dev" target="_blank" rel="noopener noreferrer" title="Billiards-AVG-Manager 앱 실행"><span><b>앱 실행하기</b><small>Billiards-AVG-Manager 열기</small></span></a>
+          <button type="button" className="manager-signup" onClick={()=>setSignupOpen(true)}><UserRound/><span><b>회원가입</b><small>스코어보드에서 계정 만들기</small></span></button>
+          <button type="button" className="manager-github" onClick={()=>setManagerQrOpen(true)} title="Billiards-AVG-Manager QR코드 보기"><span><b>앱 QR코드 보기</b><small>휴대폰으로 관리 앱 열기</small></span></button>
         </div>
       </section>
     </div>
@@ -265,6 +270,8 @@ export default function App(){
   {appActionDialog&&<div className="app-action-overlay"><section className={`app-action-modal ${appActionDialog}`} role="dialog" aria-modal="true"><button type="button" className="app-action-close" onClick={()=>setAppActionDialog(null)}><X/></button><h2>{appActionDialog==='exit'?'앱을 종료할까요?':'앱을 삭제할까요?'}</h2><p>{appActionDialog==='exit'?<>현재 화면을 닫고 앱을 종료합니다.<br/><strong>기기 정책에 따라 홈 버튼이나 앱 전환 화면이 필요할 수 있습니다.</strong></>:<>앱 삭제는 운영체제 또는 설치한 브라우저에서 진행됩니다.<br/><strong>확인을 누르면 기기에 맞는 삭제 방법을 안내합니다.</strong></>}</p><div className="app-action-buttons"><button type="button" onClick={()=>setAppActionDialog(null)}>취소</button><button type="button" className={appActionDialog==='exit'?'confirm-exit':'confirm-uninstall'} onClick={confirmAppAction}>{appActionDialog==='exit'?'앱 종료하기':'삭제 방법 보기'}</button></div></section></div>}
   {uninstallGuide&&<div className="uninstall-guide-overlay"><section className="uninstall-guide-modal" role="dialog" aria-modal="true"><button type="button" className="app-action-close" onClick={()=>setUninstallGuide(false)}><X/></button><h2>앱 삭제 방법</h2><div className="uninstall-steps"><p><b>Windows / Edge</b><span>앱 창 메뉴에서 앱 제거를 선택하거나, Windows 설정 → 앱 → 설치된 앱에서 CAROM AVG SCORE를 제거하세요.</span></p><p><b>Android</b><span>홈 화면의 앱 아이콘을 길게 누른 후 앱 정보 또는 제거를 선택하세요.</span></p><p><b>iPhone / iPad</b><span>홈 화면의 앱 아이콘을 길게 누르고 앱 제거 → 앱 삭제를 선택하세요.</span></p></div><small>웹 앱은 보안 정책상 앱 내부에서 운영체제의 설치 항목을 직접 삭제할 수 없습니다.</small><div className="uninstall-guide-actions"><button type="button" onClick={()=>setUninstallGuide(false)}>안내 닫기</button><button type="button" className="uninstall-done" onClick={acknowledgeUninstall}>삭제 완료 표시</button></div></section></div>}
   {exitGuide&&<div className="exit-guide-overlay"><section className="exit-guide-modal" role="dialog" aria-modal="true"><button type="button" className="exit-guide-close" onClick={()=>setExitGuide(false)}><X/></button><h2>앱 종료하기</h2><p>기기와 브라우저 정책에 따라 앱이 자동으로 닫히지 않을 수 있습니다.<br/><strong>홈 버튼 또는 앱 전환 화면을 사용해 앱을 종료해 주세요.</strong></p><button type="button" className="exit-guide-ok" onClick={()=>setExitGuide(false)}>확인</button></section></div>}
+  {signupOpen&&<SignupModal supabase={supabase} managerUrl={MANAGER_APP_URL} onClose={()=>setSignupOpen(false)}/>}
+  {managerQrOpen&&<ManagerQrModal url={MANAGER_APP_URL} onClose={()=>setManagerQrOpen(false)}/>}
   {pickerIndex!==null&&<PlayerPicker players={players} selectedIds={game.players.map(p=>String(p.playerId||''))} currentId={String(game.players[pickerIndex]?.playerId||'')} onSelect={id=>setPlayer(pickerIndex,id)} onClose={()=>setPickerIndex(null)}/>}
  </div></div>
 }

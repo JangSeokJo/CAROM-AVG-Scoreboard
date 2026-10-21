@@ -878,3 +878,8 @@ html[lang="vi"] .starter-button,html[lang="en"] .starter-button{white-space:norm
 html[lang="vi"] .confirm-modal,html[lang="en"] .confirm-modal,html[lang="vi"] .app-action-modal,html[lang="en"] .app-action-modal{width:min(42vw,680px)}
 html[lang="vi"] .confirm-actions button,html[lang="en"] .confirm-actions button{white-space:normal;padding:5px 10px}
 @media(max-width:900px){html[lang="vi"] .start-app-controls,html[lang="en"] .start-app-controls{max-width:62vw}.manager-intro-actions a{min-width:0}.manager-intro-actions b{white-space:normal}}
+
+
+/* SIGNUP + QR ACTION BUTTON COMPATIBILITY */
+.manager-intro-actions button.manager-signup,.manager-intro-actions button.manager-github{font:inherit;text-align:left;cursor:pointer}
+.manager-intro-actions button span{min-width:0}
