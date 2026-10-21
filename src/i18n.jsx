@@ -40,8 +40,19 @@ function translate(value,language){
 
 function translateElement(root,language){
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
- nodes.forEach(node=>{if(node.parentElement?.closest('[data-no-translate]'))return;const source=node.__koSource??node.nodeValue;node.__koSource=source;const next=translate(source,language);if(node.nodeValue!==next)node.nodeValue=next});
- root.querySelectorAll?.('[aria-label],[title],[placeholder]').forEach(el=>{if(el.closest('[data-no-translate]'))return;['aria-label','title','placeholder'].forEach(attr=>{if(!el.hasAttribute(attr))return;const prop=`__ko_${attr}`;const source=el[prop]??el.getAttribute(attr);el[prop]=source;el.setAttribute(attr,translate(source,language))})});
+ nodes.forEach(node=>{
+  if(node.parentElement?.closest('[data-no-translate]'))return;
+  const current=node.nodeValue;
+  // React may reuse the same text node for live values such as timer, score and selected player name.
+  // If React changed the displayed value after the last translation, treat it as the new source.
+  if(node.__lastTranslated!==undefined&&current!==node.__lastTranslated){node.__koSource=current}
+  const source=node.__koSource??current;
+  node.__koSource=source;
+  const next=translate(source,language);
+  node.__lastTranslated=next;
+  if(current!==next)node.nodeValue=next;
+ });
+ root.querySelectorAll?.('[aria-label],[title],[placeholder]').forEach(el=>{if(el.closest('[data-no-translate]'))return;['aria-label','title','placeholder'].forEach(attr=>{if(!el.hasAttribute(attr))return;const prop=`__ko_${attr}`;const lastProp=`__last_${attr}`;const current=el.getAttribute(attr);if(el[lastProp]!==undefined&&current!==el[lastProp])el[prop]=current;const source=el[prop]??current;el[prop]=source;const next=translate(source,language);el[lastProp]=next;if(current!==next)el.setAttribute(attr,next)})});
 }
 
 export function LanguageProvider({children}){
