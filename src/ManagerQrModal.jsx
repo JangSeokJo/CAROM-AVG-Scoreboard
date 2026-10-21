@@ -1,0 +1,7 @@
+import React from 'react';
+import {ExternalLink,ScanLine,X} from 'lucide-react';
+import {QRCodeSVG} from 'qrcode.react';
+import {useLanguage} from './i18n.jsx';
+import './ManagerQrModal.css';
+const copy={ko:{title:'에버리지 관리 앱 QR코드',desc:'휴대폰 카메라로 QR 코드를 스캔하면 Billiards-AVG-Manager 웹사이트가 열립니다.',open:'휴대폰에서 웹사이트 열기',close:'닫기'},vi:{title:'Mã QR ứng dụng quản lý AVG',desc:'Quét mã QR bằng camera điện thoại để mở trang web Billiards-AVG-Manager.',open:'Mở trang web trên điện thoại',close:'Đóng'},en:{title:'AVG Manager App QR Code',desc:'Scan the QR code with your phone camera to open the Billiards-AVG-Manager website.',open:'Open Website on Phone',close:'Close'}};
+export default function ManagerQrModal({url,onClose}){const {language}=useLanguage();const t=copy[language]||copy.ko;return <div className="qr-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}} data-no-translate="true"><section className="qr-modal" role="dialog" aria-modal="true" aria-label={t.title}><button className="qr-close" onClick={onClose} aria-label={t.close}><X/></button><div className="qr-title"><ScanLine/><div><small>CAROM AVG MANAGER</small><h2>{t.title}</h2></div></div><p>{t.desc}</p><div className="qr-code-box"><QRCodeSVG value={url} size={250} level="H" includeMargin bgColor="#ffffff" fgColor="#062b4a"/></div><code>{url}</code><a href={url} target="_blank" rel="noopener noreferrer"><ExternalLink/>{t.open}</a></section></div>}
