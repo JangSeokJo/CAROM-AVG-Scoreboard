@@ -5,7 +5,7 @@ export default function Scoreboard({game,onScore,onUndo,onPassTurn,onTimeout,onC
  const isRecord=game.category==='record'&&game.mode==='single';
  const totalSeconds=Math.max(1,Number(game.timerSeconds)||40);
  const [seconds,setSeconds]=useState(totalSeconds);
- const [started,setStarted]=useState(false);
+ const started=!isRecord||game.status==='playing';
  const [cameraFull,setCameraFull]=useState(false);
  const [finishConfirm,setFinishConfirm]=useState(false);
  const logRef=useRef(null);
@@ -20,7 +20,7 @@ export default function Scoreboard({game,onScore,onUndo,onPassTurn,onTimeout,onC
   <div className="sb-grid">
    <PlayerCard player={game.players[0]} index={0} active={!isRecord||(started&&game.currentTurn===0)} yellow={game.players[0]?.ball==='노란색'} currentAvg={avg(game.players[0])} onScore={onScore} onInactiveTap={onPassTurn} timeoutCount={game.timeoutCount||0} onTimeout={onTimeout}/>
    <main className="sb-center">
-    {isRecord&&<button className={`pass-turn-hero ${started?'danger-turn':'start-turn'}`} onClick={()=>{if(started){onPassTurn()}else{onStart?.();setSeconds(totalSeconds);setStarted(true)}}}><Flag/><span><b>{started?'턴 넘기기':'경기 시작'}</b><small>{started?'다음 선수 차례로 이동':'흰공 선수부터 카운트 시작'}</small></span></button>}
+    {isRecord&&<button className={`pass-turn-hero ${started?'danger-turn':'start-turn'}`} onClick={()=>{if(started){onPassTurn()}else{onStart?.();setSeconds(totalSeconds)}}}><Flag/><span><b>{started?'턴 넘기기':'경기 시작'}</b><small>{started?'다음 선수 차례로 이동':'흰공 선수부터 카운트 시작'}</small></span></button>}
     <button className="sb-camera" onClick={()=>setCameraFull(true)}><MonitorPlay/><b>카메라 / 15초 리플레이 예정 영역</b><span>클릭하면 전체 화면</span></button>
     {isRecord&&<div className="inning-card inning-wide"><small>CURRENT INNING</small><strong>{game.inning}</strong><span>{started?`${game.players[game.currentTurn]?.ball||''} 선수 진행`:'경기 시작 대기'}</span></div>}
     {isRecord&&(!started?<div className="pregame-control-panel"><div className="pregame-control-title"><small>PRE-GAME CONTROL</small><b>경기 시작 전 설정</b><span>선공과 좌우 자리를 확인한 뒤 경기 시작을 눌러주세요.</span></div><div className="pregame-control-buttons"><button type="button" className="change-starter" onClick={onChangeStarter}><RefreshCw/><span><b>선공 변경</b><small>선수 위치는 유지하고 공 색상만 변경</small></span></button><button type="button" className="change-seat" onClick={onSwapSeats}><Shuffle/><span><b>자리 변경</b><small>선수 정보와 공 색상을 좌우로 함께 이동</small></span></button></div></div>:<InningHistory events={game.events} players={game.players} currentInning={game.inning} scrollRef={logRef}/>)}
@@ -45,29 +45,29 @@ function InningHistory({events,players,currentInning,scrollRef}){
 }
 function MultiScoreboard({game,onScore,onUndo,onFinish,onExit}){
  const [finishConfirm,setFinishConfirm]=useState(false);
- const [paused,setPaused]=useState(false);
  const [elapsed,setElapsed]=useState(0);
+ const [paused,setPaused]=useState(false);
  const [cameraFull,setCameraFull]=useState(false);
  useEffect(()=>{if(paused)return;const id=setInterval(()=>setElapsed(v=>v+1),1000);return()=>clearInterval(id)},[paused]);
  const time=`${String(Math.floor(elapsed/3600)).padStart(2,'0')}:${String(Math.floor((elapsed%3600)/60)).padStart(2,'0')}:${String(elapsed%60).padStart(2,'0')}`;
- const colors=['white','yellow','green','orange','blue'];
- return <section className={`multi-score-screen multi-reference-layout count-${game.playerCount}`}>
+ const tones=['white','yellow','green','orange','blue'];
+ return <section className={`multi-score-screen quick-multi count-${Math.min(5,game.players.length)}`}>
   <button className="multi-exit" onClick={onExit}><ArrowLeft/> 경기 나가기</button>
-  <div className="multi-board-grid">
-   {game.players.map((p,i)=><article key={i} className={`multi-player-panel player-${i+1} tone-${colors[i]||'blue'}`}>
-    <header><b>{p.name||`선수 ${i+1}`}</b><small>✎</small></header>
-    <div className="multi-main-adjust"><button onClick={()=>onScore(i,-1)} disabled={p.score<=0}><Minus/></button><button onClick={()=>onScore(i,1)}><Plus/></button></div>
-    <strong className="multi-big-score">{p.score}</strong>
-    <div className="multi-quick-points">{[2,3,4,5].map(point=><button key={point} onClick={()=>onScore(i,point)}>+{point}</button>)}</div>
+  <div className="quick-multi-grid">
+   {game.players.slice(0,5).map((p,i)=><article key={i} className={`quick-player-card q-player-${i+1} tone-${tones[i]}`}>
+    <header><b>{p.name||`선수 ${i+1}`}</b></header>
+    <div className="quick-adjust"><button disabled={p.score<=0} onClick={()=>onScore(i,-1)}><Minus/></button><button onClick={()=>onScore(i,1)}><Plus/></button></div>
+    <strong>{p.score}</strong>
+    <div className="quick-points"><button onClick={()=>onScore(i,1)}>+1점</button><button onClick={()=>onScore(i,2)}>+2점</button></div>
    </article>)}
-   <main className="multi-control-center">
-    <div className="multi-control-head"><Volume2/><span><small>CAROM · 3 CUSHION</small><b>{time}</b></span></div>
-    <div className="multi-control-actions"><button className="pause" onClick={()=>setPaused(v=>!v)}>{paused?<><Play/> 계속</>:<><Pause/> 일시정지</>}</button><button className="finish" onClick={()=>setFinishConfirm(true)}><Flag/> 경기 종료</button></div>
-    <button className="multi-camera" onClick={()=>setCameraFull(true)}><MonitorPlay/><b>카메라 / 15초 리플레이 예정 영역</b><small>클릭하면 전체 화면</small></button>
-    <div className="multi-camera-tools"><button onClick={onUndo}><Undo2/> 실행 취소</button><button onClick={()=>setCameraFull(true)}><Maximize2/> 전체 화면</button></div>
+   <main className="quick-control-center">
+    <div className="quick-time"><Volume2/><span><small>QUICK MATCH</small><b>{time}</b></span></div>
+    <div className="quick-actions"><button onClick={()=>setPaused(v=>!v)}>{paused?<><Play/> 계속</>:<><Pause/> 일시정지</>}</button><button onClick={()=>setFinishConfirm(true)}><Flag/> 경기 종료</button></div>
+    <button className="quick-camera" onClick={()=>setCameraFull(true)}><MonitorPlay/><b>카메라 / 15초 리플레이 예정 영역</b><small>클릭하면 전체 화면</small></button>
+    <button className="quick-undo" onClick={onUndo}><Undo2/> 실행 취소</button>
    </main>
   </div>
   {cameraFull&&<div className="camera-full"><button onClick={()=>setCameraFull(false)}><X/></button><MonitorPlay/><h2>카메라 전체 화면</h2><p>카메라 연결 단계에서 영상이 표시됩니다.</p></div>}
-  {finishConfirm&&<div className="finish-confirm-overlay"><section className="finish-confirm-modal" role="dialog" aria-modal="true"><button type="button" className="finish-confirm-close" onClick={()=>setFinishConfirm(false)}><X/></button><div className="finish-confirm-icon"><Flag/></div><h2>경기를 종료할까요?</h2><p>현재 점수를 기준으로 경기 결과 화면으로 이동합니다.<br/><strong>결과를 확인한 후 다음 작업을 선택할 수 있습니다.</strong></p><div className="finish-confirm-actions"><button type="button" onClick={()=>setFinishConfirm(false)}>취소</button><button type="button" className="finish-confirm-primary" onClick={()=>{setFinishConfirm(false);onFinish()}}>경기 종료하기</button></div></section></div>}
+  {finishConfirm&&<div className="finish-confirm-overlay"><section className="finish-confirm-modal" role="dialog" aria-modal="true"><button type="button" className="finish-confirm-close" onClick={()=>setFinishConfirm(false)}><X/></button><div className="finish-confirm-icon"><Flag/></div><h2>경기를 종료할까요?</h2><p>현재 점수를 기준으로 경기 결과 화면으로 이동합니다.</p><div className="finish-confirm-actions"><button type="button" onClick={()=>setFinishConfirm(false)}>취소</button><button type="button" className="finish-confirm-primary" onClick={()=>{setFinishConfirm(false);onFinish()}}>경기 종료하기</button></div></section></div>}
  </section>
 }

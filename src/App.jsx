@@ -124,7 +124,7 @@ export default function App(){
  function makePlayer(i,mode){return {side:i,playerId:'',name:'',handicap:0,ball:mode==='single'?(i===0?'흰색':'노란색'):'',score:0,hr:0,inningPoints:0,timeoutsUsed:0}}
  function continueMode(){
   const mode=category==='record'?'single':quickMode;
-  const count=mode==='single'?2:playerCount;
+  const count=mode==='single'?2:Math.min(5,Math.max(3,playerCount));
   const nextPlayers=Array.from({length:count},(_,i)=>({
    ...makePlayer(i,mode),
    name:category==='quick'?`선수 ${i+1}`:'',
@@ -136,7 +136,7 @@ export default function App(){
  }
  function setPlayer(index,id){const p=players.find(x=>String(x.id)===String(id));setGame(g=>({...g,players:g.players.map((x,i)=>i===index?{...x,playerId:String(p?.id||id),name:p?.name||'',handicap:Number(p?.handicap||0),calculatedAvg:p?.calculatedAvg??null,winRate:p?.winRate??null,wins:p?.wins||0,losses:p?.losses||0,games:p?.games||0,calculatedHr:p?.calculatedHr||0}:x)}));setPickerIndex(null)}
  function setStarter(index){setGame(g=>({...g,currentTurn:index,players:g.players.map((p,i)=>({...p,ball:i===index?'흰색':'노란색'}))}))}
- function start(){if(game.players.some(p=>!p.name)){setNotice('모든 선수를 선택해 주세요.');return}if(new Set(game.players.map(p=>p.playerId)).size!==game.players.length){setNotice('같은 선수를 중복 선택할 수 없습니다.');return}setNotice('');setGame(g=>({...g,status:'playing'}));setScreen('play')}
+ function start(){if(game.players.some(p=>!p.name)){setNotice('모든 선수를 선택해 주세요.');return}if(new Set(game.players.map(p=>p.playerId)).size!==game.players.length){setNotice('같은 선수를 중복 선택할 수 없습니다.');return}setNotice('');setGame(g=>({...g,status:'ready'}));setScreen('play')}
  function score(index,points){
   setGame(g=>{
    if(g.category==='record'&&g.mode==='single'&&index!==g.currentTurn)return g;
@@ -164,7 +164,7 @@ export default function App(){
   return {...g,events};
  })}
  function changeStarter(){setGame(g=>{if(g.events.length)return g;const players=g.players.map(p=>({...p,ball:p.ball==='흰색'?'노란색':'흰색'}));const whiteIndex=players.findIndex(p=>p.ball==='흰색');return {...g,players,currentTurn:whiteIndex>=0?whiteIndex:0}})}
- function swapSeats(){setGame(g=>{if(g.events.length||g.players.length!==2)return g;const players=[g.players[1],g.players[0]].map((p,i)=>({...p,side:i}));const whiteIndex=players.findIndex(p=>p.ball==='흰색');return {...g,players,currentTurn:whiteIndex>=0?whiteIndex:0}})}
+ function swapSeats(){setGame(g=>{if(g.events.length||g.players.length!==2)return g;const previousStarterId=g.players[g.currentTurn]?.playerId;const players=[{...g.players[1],side:0},{...g.players[0],side:1}];const starterIndex=players.findIndex(p=>p.playerId===previousStarterId);return {...g,players,currentTurn:starterIndex>=0?starterIndex:0}})}
  function startScoreboard(){setGame(g=>{const whiteIndex=g.players.findIndex(p=>p.ball==='흰색');return {...g,currentTurn:whiteIndex>=0?whiteIndex:0,status:'playing'}})}
  function passTurn(){setGame(g=>{if(g.category!=='record'||g.mode!=='single')return g;const yellowEnding=g.players[g.currentTurn]?.ball==='노란색';const nextTurn=g.currentTurn===0?1:0;return {...g,currentTurn:nextTurn,inning:yellowEnding?g.inning+1:g.inning,players:g.players.map((p,i)=>i===g.currentTurn?{...p,inningPoints:0}:p),events:[...g.events,{id:crypto.randomUUID(),type:'turn',inning:g.inning,playerIndex:g.currentTurn,playerName:g.players[g.currentTurn]?.name||'',points:0,total:g.players[g.currentTurn]?.score||0,at:new Date().toISOString()}]}})}
  function endInning(){setGame(g=>({...g,inning:g.inning+1,players:g.players.map(p=>({...p,inningPoints:0})),events:[...g.events,{id:crypto.randomUUID(),inning:g.inning,playerIndex:-1,playerName:'이닝 종료',points:0,at:new Date().toISOString()}]}))}
@@ -248,7 +248,7 @@ export default function App(){
           {category==='quick'&&<button className={quickMode==='multi'?'active':''} onClick={()=>setQuickMode('multi')}><Users/><b>다인 경기</b><small>선공·후공 없이 여러 명이 같은 방식으로 진행</small></button>}
         </div>
         {category==='quick'&&quickMode==='multi'&&<div className="multi-options single-option">
-          <div className="option-block"><label>참가 선수 수</label><div className="count-buttons">{[3,4,5,6].map(n=><button key={n} className={playerCount===n?'active':''} onClick={()=>setPlayerCount(n)}>{n}명</button>)}</div><small>선수 선택 없이 선수 1, 선수 2 순서로 자동 구성됩니다.</small></div>
+          <div className="option-block"><label>참가 선수 수</label><div className="count-buttons">{[3,4,5].map(n=><button key={n} className={playerCount===n?'active':''} onClick={()=>setPlayerCount(n)}>{n}명</button>)}</div><small>선수 선택 없이 선수 1, 선수 2 순서로 자동 구성됩니다.</small></div>
         </div>}
         <div className="quick-guide">{category==='record'?'선수와 핸디를 불러온 뒤 이닝·AVG·HR을 기록합니다.':'빠른 시작은 이닝·턴 진행 없이 점수 입력과 실행 취소만 사용합니다.'}</div>
         <div className="choice-footer"><button onClick={()=>setScreen('start')}>이전</button><button className="primary" onClick={continueMode}>{category==='record'?'선수 선택으로':'바로 시작'}</button></div>
