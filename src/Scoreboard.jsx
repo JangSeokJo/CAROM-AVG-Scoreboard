@@ -47,10 +47,7 @@ export default function Scoreboard({game,onScore,onUndo,onPassTurn,onTimeout,onC
  const logRef=useRef(null);
  const [elapsed,setElapsed]=useState(0);
  const scoreFeeds=useDelayedScoreFeed(game.events,game.players.length,!isRecord);
- const positiveScoreEvents=game.events.filter(event=>event.type==='score'&&Number(event.points)>0);
- const latestPositiveScore=positiveScoreEvents[positiveScoreEvents.length-1];
- const scoreResetKey=latestPositiveScore?`${positiveScoreEvents.length}:${latestPositiveScore.playerIndex}:${latestPositiveScore.points}`:'';
- useEffect(()=>{if(started)setSeconds(totalSeconds)},[game.currentTurn,totalSeconds,started,game.timeoutVersion,scoreResetKey]);
+ useEffect(()=>{if(started)setSeconds(totalSeconds)},[game.currentTurn,totalSeconds,started,game.timeoutVersion]);
  useEffect(()=>{if(!isRecord||!started)return;const id=setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000);return()=>clearInterval(id)},[isRecord,started,game.currentTurn,totalSeconds]);
  useEffect(()=>{if(!started)return;const id=setInterval(()=>setElapsed(value=>value+1),1000);return()=>clearInterval(id)},[started]);
  useEffect(()=>{const el=logRef.current;if(el)el.scrollTop=el.scrollHeight},[game.events.length,game.inning]);
