@@ -255,3 +255,43 @@ button:disabled{cursor:not-allowed}
   filter:none!important;
 }
 /* Keep inactive state exactly as defined earlier: no opacity override here. */
+
+
+/* FAST TOUCH V1
+   Improve input latency and press feedback without changing layout, colors, or inactive opacity. */
+.scoreboard-screen button,
+.multi-score-screen button,
+.score-tap,
+.quick-score-tap{
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+  -webkit-touch-callout:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+}
+/* Remove slow inherited transitions from interactive controls. */
+.scoreboard-screen button,
+.multi-score-screen button{
+  transition:transform 35ms ease-out,filter 35ms ease-out!important;
+  will-change:transform;
+}
+/* Immediate but restrained physical feedback. */
+.scoreboard-screen button:not(:disabled):active,
+.multi-score-screen button:not(:disabled):active,
+.score-tap:active,
+.quick-score-tap:active{
+  transform:scale(.975)!important;
+  filter:brightness(.95) contrast(1.03)!important;
+}
+/* Keep primary scoring targets comfortably tappable on touch devices. */
+@media(pointer:coarse){
+  .score-adjust button,
+  .raised-buttons button,
+  .quick-adjust button,
+  .quick-points button,
+  .multi-main-adjust button,
+  .multi-quick-points button,
+  .pregame-control-buttons button{
+    min-height:48px!important;
+  }
+}
