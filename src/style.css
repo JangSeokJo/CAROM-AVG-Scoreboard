@@ -231,20 +231,69 @@
 }
 
 
-/* BACKGROUND ONLY: remove broad blue cast without changing any button colors */
-html,body,#root{background:#f2f3f5!important}
-.app,.stage,.setup,.result,.saved{background:#f2f3f5!important}
-.setup,.result,.saved{color:#101214!important}
-/* Preserve card and button colors from the original stylesheet. */
-.saved-popup{
-  min-width:min(560px,82vw);
-  padding:clamp(24px,3vw,48px);
-  border:1px solid #d2d5da;
-  border-radius:clamp(16px,1.3vw,24px);
-  background:#fff;
-  color:#101214;
-  text-align:center;
-  box-shadow:0 12px 34px rgba(0,0,0,.18);
+/* ORIGINAL THEME RESTORE + START PHOTO + SAVE POPUP */
+.start.start-centered{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#061b2b;
 }
-.saved-popup p{color:#5f6670!important}
-.saved-countdown{display:block;margin:clamp(12px,1vw,18px) 0;color:#30353b;font-size:clamp(13px,1vw,18px)}
+.start.start-centered::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background-image:url('/scoreboard-start-bg.png');
+  background-position:center center;
+  background-repeat:no-repeat;
+  background-size:cover;
+}
+.start.start-centered::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(180deg,rgba(2,13,23,.28),rgba(2,13,23,.68));
+}
+.start-hero,.start-actions{position:relative;z-index:1}
+.start-hero{text-shadow:0 3px 12px rgba(0,0,0,.75)}
+.save-confirm-overlay{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:rgba(1,10,18,.72);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+.save-confirm-popup{
+  width:min(520px,88vw);
+  padding:clamp(22px,2.5vw,38px);
+  border:1px solid #3c779f;
+  border-radius:clamp(16px,1.2vw,22px);
+  background:linear-gradient(155deg,#0c3553,#071f34);
+  color:#fff;
+  text-align:center;
+  box-shadow:0 20px 55px rgba(0,0,0,.48);
+}
+.save-confirm-icon{
+  width:clamp(58px,5vw,82px);
+  height:clamp(58px,5vw,82px);
+  margin:0 auto 14px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#1688ef;
+  box-shadow:0 0 0 7px rgba(22,136,239,.16);
+}
+.save-confirm-icon svg{width:46%;height:46%}
+.save-confirm-popup h2{margin:6px 0;font-size:clamp(21px,1.7vw,30px)}
+.save-confirm-popup p{margin:8px 0 16px;color:#c8e1f2;font-size:clamp(14px,1vw,18px)}
+.save-confirm-popup p strong{color:#fff;font-size:1.35em}
+.save-confirm-progress{height:8px;margin:0 0 20px;border-radius:99px;overflow:hidden;background:#173f5d}
+.save-confirm-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#22a7ff,#39d5a4);transition:width .3s linear}
+.save-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.save-confirm-actions button{min-height:50px;border:1px solid #4686b1;border-radius:11px;background:#0a2941;color:#fff;font-weight:900;font-size:clamp(13px,.95vw,17px)}
+.save-confirm-actions .primary{background:#1688ef;border-color:#34a0ff}
