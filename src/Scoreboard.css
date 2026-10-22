@@ -209,68 +209,8 @@ button:disabled{cursor:not-allowed}
 @media(max-height:850px) and (orientation:landscape){.game-clock{min-height:36px}.scoreboard-screen.record-single .sb-center{gap:6px!important;grid-template-rows:36px 58px minmax(0,1fr) 76px minmax(0,.62fr)!important}.scoreboard-screen.record-single .inning-history-title{min-height:30px!important}.scoreboard-screen.record-single .inning-history-row{min-height:27px!important;height:27px!important}}
 
 
-/* SCOREBOARD SHARPNESS + TOUCH RESPONSE V2
-   Preserve original colors; remove hazy glow/reflection and improve edge clarity. */
-.scoreboard-screen,.multi-score-screen{
-  image-rendering:auto;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-/* Replace broad blue glows with crisp active borders. */
-.sb-player.active{
-  box-shadow:0 0 0 4px #38a9ef,0 5px 14px rgba(0,0,0,.2)!important;
-  filter:none!important;
-}
-.sb-player.yellow.active{
-  box-shadow:0 0 0 4px #d7b423,0 5px 14px rgba(0,0,0,.2)!important;
-  filter:none!important;
-}
-/* Inactive cards remain readable instead of looking washed out. */
-.sb-player.inactive{opacity:.9!important;filter:none!important}
-/* Sharper camera/control surfaces while retaining the original blue palette. */
-.sb-camera,.quick-control-center,.quick-camera,.game-clock{
-  filter:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  box-shadow:0 4px 12px rgba(0,0,0,.24)!important;
-}
-.segment-timer{
-  filter:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  box-shadow:0 4px 12px rgba(0,0,0,.26)!important;
-}
-.segment-timer .segment-track i.on{filter:none!important}
-/* Make translucent buttons closer to solid without replacing their colors. */
-.quick-adjust button{background:rgba(255,255,255,.98)!important}
-.quick-points button{background:rgba(255,255,255,.97)!important}
-/* Improve text edge contrast, preserving each card's original color. */
-.sb-player h2,.sb-score,.quick-player-card header b,.quick-score-tap>strong{
-  -webkit-font-smoothing:antialiased;
-  text-rendering:geometricPrecision;
-  text-shadow:none!important;
-}
-.sb-player em{color:#345b79!important}
-.score-feed small{
-  -webkit-text-stroke:.45px rgba(0,0,0,.78);
-  paint-order:stroke fill;
-  text-shadow:0 1px 0 rgba(255,255,255,.9)!important;
-}
-/* Faster mobile touch response with original button colors intact. */
-.scoreboard-screen button,.multi-score-screen button,.score-tap,.quick-score-tap{
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-  -webkit-user-select:none;
-  -webkit-touch-callout:none;
-}
-.scoreboard-screen button,.multi-score-screen button{
-  transition:transform .04s ease,filter .04s ease!important;
-}
-.scoreboard-screen button:active,.multi-score-screen button:active,.score-tap:active,.quick-score-tap:active{
-  transform:scale(.975)!important;
-  filter:brightness(.94) contrast(1.04)!important;
-}
-@media(pointer:coarse){
-  .score-adjust button,.raised-buttons button,.quick-adjust button,.quick-points button{min-height:50px!important}
-}
+/* QUICK SCORE FEED V2: 2-second grouped scoring, larger outlined text */
+.score-feed{width:clamp(46px,3.2vw,68px)!important;right:clamp(10px,.8vw,17px)!important}
+.score-feed small{font-size:clamp(19px,1.28vw,28px)!important;line-height:1.12!important;font-weight:1000!important;color:#ffffff!important;-webkit-text-stroke:1.2px #000!important;paint-order:stroke fill!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 2px 3px rgba(0,0,0,.65)!important}
+.sb-player.yellow .score-feed small,.tone-yellow .score-feed small,.tone-green .score-feed small,.tone-orange .score-feed small,.tone-blue .score-feed small{color:#fff!important;-webkit-text-stroke:1.2px #000!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 2px 3px rgba(0,0,0,.65)!important}
+.scoreboard-screen.quick-single .turn-score-box{display:none!important}
