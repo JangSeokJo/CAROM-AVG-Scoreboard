@@ -214,3 +214,44 @@ button:disabled{cursor:not-allowed}
 .score-feed small{font-size:clamp(19px,1.28vw,28px)!important;line-height:1.12!important;font-weight:1000!important;color:#ffffff!important;-webkit-text-stroke:1.2px #000!important;paint-order:stroke fill!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 2px 3px rgba(0,0,0,.65)!important}
 .sb-player.yellow .score-feed small,.tone-yellow .score-feed small,.tone-green .score-feed small,.tone-orange .score-feed small,.tone-blue .score-feed small{color:#fff!important;-webkit-text-stroke:1.2px #000!important;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 2px 3px rgba(0,0,0,.65)!important}
 .scoreboard-screen.quick-single .turn-score-box{display:none!important}
+
+
+/* DE-GLOSS V1
+   Remove broad glossy haze only. Preserve inactive-player opacity and all existing colors. */
+.scoreboard-screen,.multi-score-screen{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+/* Replace wide luminous halos with crisp outlines and a short neutral shadow. */
+.sb-player.active{
+  box-shadow:0 0 0 clamp(3px,.22vw,5px) rgba(54,190,255,.72),0 5px 12px rgba(0,0,0,.18)!important;
+}
+.sb-player.yellow.active{
+  box-shadow:0 0 0 clamp(3px,.22vw,5px) rgba(216,180,40,.78),0 5px 12px rgba(0,0,0,.18)!important;
+}
+/* Flatten glass-like panels while keeping their original palette. */
+.sb-camera,.game-clock,.segment-timer,.inning-history,.pregame-control-panel,
+.quick-control-center,.quick-camera,.multi-camera{
+  filter:none!important;
+  -webkit-filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background-image:none!important;
+  box-shadow:0 3px 9px rgba(0,0,0,.18)!important;
+}
+/* Keep original solid colors after removing gradients. */
+.sb-camera{background-color:#071f35!important}
+.game-clock{background-color:#082b49!important}
+.segment-timer{background-color:#061d31!important}
+.inning-history{background-color:#071f35!important}
+.pregame-control-panel,.quick-control-center,.quick-camera,.multi-camera{background-color:#082740!important}
+/* Remove neon bloom without changing timer stage colors. */
+.segment-track i.on{box-shadow:none!important;filter:none!important}
+/* Sharper type. Do not alter score-feed outlines, which are functional. */
+.sb-player h2,.sb-score,.sb-metrics,.segment-seconds,.game-clock,
+.inning-history-title,.inning-history-head,.inning-history-row,
+.pregame-control-title,.pregame-control-buttons{
+  text-shadow:none!important;
+  filter:none!important;
+}
+/* Keep inactive state exactly as defined earlier: no opacity override here. */
