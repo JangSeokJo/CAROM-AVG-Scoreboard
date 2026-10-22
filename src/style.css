@@ -297,3 +297,25 @@
 .save-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .save-confirm-actions button{min-height:50px;border:1px solid #4686b1;border-radius:11px;background:#0a2941;color:#fff;font-weight:900;font-size:clamp(13px,.95vw,17px)}
 .save-confirm-actions .primary{background:#1688ef;border-color:#34a0ff}
+
+
+/* FINAL SCOREBOARD FIXES */
+/* Start background uses the first existing image found in /public by App.jsx. */
+.start.start-centered::before{
+  background-image:var(--start-bg-image,url('/start-player-bg.jpg'))!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+/* Save button label and icon are always white. */
+.result-save-button,.result-save-button *{color:#fff!important}
+.result-save-button svg{stroke:#fff!important}
+/* Exit confirmation modal. */
+.exit-confirm-overlay{position:fixed;inset:0;z-index:320;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.76);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.exit-confirm-popup{width:min(520px,88vw);padding:clamp(24px,2.6vw,40px);border:1px solid #477b9f;border-radius:clamp(16px,1.2vw,22px);background:linear-gradient(155deg,#0d3552,#071d30);color:#fff;text-align:center;box-shadow:0 20px 55px rgba(0,0,0,.55)}
+.exit-confirm-icon{width:clamp(58px,5vw,82px);height:clamp(58px,5vw,82px);margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#ef3f48;color:#fff;font-size:clamp(30px,2.6vw,44px);font-weight:950;box-shadow:0 0 0 7px rgba(239,63,72,.16)}
+.exit-confirm-popup h2{margin:6px 0;font-size:clamp(21px,1.7vw,30px)}
+.exit-confirm-popup p{margin:10px 0 22px;color:#c7dcec;font-size:clamp(13px,.95vw,17px);line-height:1.55}
+.exit-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.exit-confirm-actions button{min-height:52px;border:1px solid #477b9f;border-radius:11px;background:#0a2941;color:#fff;font-weight:900;font-size:clamp(13px,.95vw,17px)}
+.exit-confirm-actions .danger{background:#ef3f48;border-color:#ff6a73}

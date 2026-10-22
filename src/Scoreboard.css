@@ -218,3 +218,37 @@ button:disabled{cursor:not-allowed}
 
 /* BACKGROUND ONLY: neutral canvas; all original button/card colors remain unchanged */
 .scoreboard-screen,.multi-score-screen,.quick-multi{background:#f2f3f5!important}
+
+
+/* FINAL BLACK CANVAS + SYMMETRIC INNING GRID */
+.scoreboard-screen,.multi-score-screen,.quick-multi{
+  background:#000!important;
+}
+.inning-history-head,.inning-history-row{
+  width:100%!important;
+  grid-template-columns:minmax(0,1fr) clamp(72px,5.3vw,112px) minmax(0,1fr)!important;
+  column-gap:0!important;
+  margin:0!important;
+  padding-left:clamp(8px,.55vw,12px)!important;
+  padding-right:clamp(8px,.55vw,12px)!important;
+  box-sizing:border-box!important;
+}
+.inning-history-head>div,.inning-history-row>*{
+  min-width:0!important;
+  margin:0!important;
+  padding-left:clamp(6px,.45vw,10px)!important;
+  padding-right:clamp(6px,.45vw,10px)!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+  justify-content:center!important;
+}
+.inning-history-row>strong{
+  width:100%!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.inning-history-scroll{
+  padding-left:0!important;
+  padding-right:0!important;
+  scrollbar-gutter:stable both-edges!important;
+}
