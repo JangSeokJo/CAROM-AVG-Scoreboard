@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {createClient} from '@supabase/supabase-js';
-import {Users,UserRound,Play,Save,RotateCcw,X,UserCheck} from 'lucide-react';
+import {Users,UserRound,Play,Save,X,UserCheck,UserPlus,QrCode,Languages,Copy,Check} from 'lucide-react';
 import Scoreboard from './Scoreboard.jsx';
 import './Scoreboard.css';
 
@@ -30,8 +30,34 @@ export default function App(){
  const [savePopupSeconds,setSavePopupSeconds]=useState(5);
  const [exitConfirmOpen,setExitConfirmOpen]=useState(false);
  const [startBgUrl,setStartBgUrl]=useState('');
+ const [language,setLanguage]=useState(()=>localStorage.getItem('carom-score-language')||'ko');
+ const [languageOpen,setLanguageOpen]=useState(false);
+ const [signupOpen,setSignupOpen]=useState(false);
+ const [qrOpen,setQrOpen]=useState(false);
+ const [signupForm,setSignupForm]=useState({name:'',nickname:'',handicap:'',email:'',password:''});
+ const [signupBusy,setSignupBusy]=useState(false);
+ const [signupMessage,setSignupMessage]=useState('');
+ const [copied,setCopied]=useState(false);
  const saveLockRef=useRef(false);
 
+ const startText={
+  ko:{tagline:'실제 경기의 흐름을 그대로, 쉽고 빠르게.',newGame:'새 경기 시작',signup:'회원가입',qr:'QR코드 확인',language:'언어 선택'},
+  vi:{tagline:'Theo dõi trận đấu thực tế một cách nhanh chóng và dễ dàng.',newGame:'Bắt đầu trận mới',signup:'Đăng ký',qr:'Xem mã QR',language:'Chọn ngôn ngữ'},
+  en:{tagline:'Follow the real match flow, quickly and easily.',newGame:'Start New Match',signup:'Sign Up',qr:'View QR Code',language:'Language'}
+ };
+ const tx=startText[language]||startText.ko;
+ const languageLabel={ko:'한국어',vi:'Tiếng Việt',en:'English'}[language];
+ useEffect(()=>{localStorage.setItem('carom-score-language',language)},[language]);
+ async function submitSignup(event){
+  event.preventDefault();
+  if(!supabase){setSignupMessage('Supabase 환경변수를 확인해 주세요.');return}
+  if(!signupForm.email||signupForm.password.length<6||!signupForm.name){setSignupMessage('이름, 이메일, 6자 이상의 비밀번호를 입력해 주세요.');return}
+  setSignupBusy(true);setSignupMessage('');
+  const {data,error}=await supabase.auth.signUp({email:signupForm.email,password:signupForm.password,options:{data:{name:signupForm.name,nickname:signupForm.nickname,handicap:Number(signupForm.handicap)||0}}});
+  if(error){setSignupMessage(error.message);setSignupBusy(false);return}
+  if(data?.user){await supabase.from('players').insert({name:signupForm.name,nick:signupForm.nickname||signupForm.name,handicap:Number(signupForm.handicap)||0,user_id:data.user.id}).then(()=>{}).catch(()=>{})}
+  setSignupMessage('회원가입 신청이 완료되었습니다. 이메일 인증 링크를 확인해 주세요.');setSignupBusy(false);
+ }
  useEffect(()=>{localStorage.setItem('carom-score-live',JSON.stringify(game))},[game]);
  useEffect(()=>{
   const candidates=['/start-player-bg.jpg','/scoreboard-start-bg.png','/start-bg.png','/scoreboard-bg.png','/main-bg.png','/billiards-bg.png','/scoreboard-start-bg.jpg','/start-bg.jpg'];
@@ -166,15 +192,14 @@ export default function App(){
   {screen!=='play'&&<header><b>CAROM AVG <span>SCORE</span></b><small>16:9 실시간 스코어보드</small></header>}
   {notice&&<div className="notice">{notice}</div>}
   {screen==='start'&&<section className="start start-centered" style={startBgUrl?{'--start-bg-image':`url(${startBgUrl})`}:undefined}>
+    <div className="start-language-wrap"><button type="button" className="start-language-button" onClick={()=>setLanguageOpen(v=>!v)}><Languages/><span>{languageLabel}</span></button>{languageOpen&&<div className="start-language-menu">{[['ko','한국어'],['vi','Tiếng Việt'],['en','English']].map(([code,label])=><button type="button" key={code} className={language===code?'active':''} onClick={()=>{setLanguage(code);setLanguageOpen(false)}}>{label}{language===code&&<Check/>}</button>)}</div>}</div>
     <div className="hero start-hero">
       <div className="balls">⚪ 🟡 🔴</div>
       <h1>CAROM AVG SCORE</h1>
-      <p>실제 경기의 흐름을 그대로, 쉽고 빠르게.</p>
+      <p>{tx.tagline}</p>
     </div>
-    <div className="start-actions start-actions-row">
-      <button className="primary" onClick={()=>setScreen('mode')}><Play/> 새 경기 시작</button>
-      <button disabled={!localStorage.getItem('carom-score-live')} onClick={()=>setScreen('play')}><RotateCcw/> 진행 중 경기 불러오기</button>
-    </div>
+    <div className="start-actions start-actions-main"><button className="primary" onClick={()=>setScreen('mode')}><Play/> {tx.newGame}</button></div>
+    <div className="start-account-actions"><button type="button" onClick={()=>setSignupOpen(true)}><UserPlus/>{tx.signup}</button><button type="button" onClick={()=>setQrOpen(true)}><QrCode/>{tx.qr}</button></div>
   </section>}
   {screen==='mode'&&<section className="game-choice">
     <div className="choice-heading"><small>NEW GAME</small><h1>시작 방식을 선택하세요</h1><p>왼쪽에서 경기 목적을 고른 뒤, 오른쪽에서 경기 구성을 선택하세요.</p></div>
@@ -201,8 +226,10 @@ export default function App(){
    {game.players.map((p,i)=><article className={`player-setup ${p.playerId?'selected':''} ${p.ball==='노란색'?'yellow-player':''}`} key={i}><div className={`ball ${p.ball}`}></div><h2>{i===0?'왼쪽 선수':'오른쪽 선수'}</h2><button type="button" className="player-picker-button" onClick={()=>setPickerIndex(i)}><UserCheck/><span><small>{p.playerId?'선택된 선수':'선수 선택'}</small><b>{p.name||'목록에서 선수를 선택하세요'}</b></span><em>{p.playerId?`${p.handicap||0}점`:'선택'}</em></button><div className="setup-player-stats"><b>AVG {p.playerId?(p.calculatedAvg?.toFixed?.(3)??'-'):'-'}</b>{headToHead&&game.players.every(x=>x.playerId)&&<span>상대전적 {i===0?headToHead.aw:headToHead.bw}승 {i===0?headToHead.bw:headToHead.aw}패<br/>상대 AVG {i===0?headToHead.aAvg:headToHead.bAvg} · HR {i===0?headToHead.ahr:headToHead.bhr}</span>}</div><button type="button" className={`starter-button ${game.currentTurn===i?'active':''}`} disabled={!p.playerId} onClick={()=>setStarter(i)}>{game.currentTurn===i?'선공 · 흰공':'선공으로 선택'}</button></article>)}
    </div>{game.category==='record'&&game.mode==='single'&&<div className="timer-setup"><div><b>턴 타이머</b><span>선수 차례마다 적용할 시간을 선택하세요.</span></div><div className="timer-presets">{[30,35,40,45].map(sec=><button key={sec} className={timerPreset===sec?'active':''} onClick={()=>setTimerPreset(sec)}>{sec}초</button>)}<button className={timerPreset==='custom'?'active':''} onClick={()=>setTimerPreset('custom')}>기타 설정</button></div>{timerPreset==='custom'&&<label className="custom-timer"><input type="number" min="5" max="300" value={customTimer} onChange={e=>setCustomTimer(e.target.value)} placeholder="초 입력"/><span>초</span><small>5초부터 300초까지 입력할 수 있습니다.</small></label>}</div>}<div className="setup-footer"><button onClick={()=>setScreen('mode')}>이전</button><button className="primary" onClick={start}>경기 시작</button></div></section>}
   {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onStart={beginPlay} onChangeStarter={changeStarter} onSwapSeats={swapSeats} onFinish={finish} onExit={requestExit} avg={avg}/>}
-  {screen==='result'&&<section className="result"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=><article key={i}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span>{p===winner?'1위':game.mode==='single'?'패':'-'}</span><p>{game.mode==='single'?`AVG ${avg(p)} · HR ${p.hr}`:`최종 점수 ${p.score}`}</p></article>)}</div>{headToHead&&<div className="result-h2h-live"><b>이번 경기 포함 상대전적</b><span>{game.players[0]?.name} {headToHead.aw}승 · AVG {headToHead.aAvg} · HR {headToHead.ahr}</span><i>VS</i><span>{game.players[1]?.name} {headToHead.bw}승 · AVG {headToHead.bAvg} · HR {headToHead.bhr}</span></div>}<div className="result-meta"><b>{game.mode==='multi'?`총 ${game.inning}라운드`:`전체 이닝 ${game.inning}`}</b><span>{game.category==='record'?'노란공 패배 시 기록 앱 계산에서 1이닝이 자동 차감됩니다.':'빠른 시작 경기는 기록 앱에 저장되지 않습니다.'}</span></div><div className="result-actions">{game.category==='record'&&<div className="auto-save-guide">{saving?'기록을 저장하고 있습니다...':`${autoSaveSeconds}초 후 자동 저장됩니다.`}</div>}{game.category==='record'?<button className="primary result-save-button" onClick={requestSave} disabled={saving}><Save/>{saving?'저장 중...':'기록 앱에 저장'}</button>:<button className="primary result-save-button" onClick={reset}><Play/> 새 경기 시작</button>}<div className="result-sub-actions"><button onClick={()=>{saveLockRef.current=false;setSaving(false);setSavePopupOpen(false);setSavePopupSeconds(5);setScreen('play')}}>경기로 돌아가기</button><button onClick={reset}>새 경기 시작</button></div></div></section>}
+  {screen==='result'&&<section className="result"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=><article key={i}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span>{p===winner?'1위':game.mode==='single'?'패':'-'}</span><p>{game.mode==='single'?`AVG ${avg(p)} · HR ${p.hr}`:`최종 점수 ${p.score}`}</p></article>)}</div>{headToHead&&<div className="result-h2h-live"><b>이번 경기 포함 상대전적</b><span>{game.players[0]?.name} {headToHead.aw}승 · AVG {headToHead.aAvg} · HR {headToHead.ahr}</span><i>VS</i><span>{game.players[1]?.name} {headToHead.bw}승 · AVG {headToHead.bAvg} · HR {headToHead.bhr}</span></div>}<div className="result-meta"><b>{game.mode==='multi'?`총 ${game.inning}라운드`:`전체 이닝 ${game.inning}`}</b><span>{game.category==='record'?'노란공 패배 시 기록 앱 계산에서 1이닝이 자동 차감됩니다.':'빠른 시작 경기는 기록 앱에 저장되지 않습니다.'}</span></div><div className="result-actions">{game.category==='record'&&<div className="auto-save-panel"><div className="auto-save-guide">{saving?'기록을 저장하고 있습니다...':`${autoSaveSeconds}초 후 자동 저장됩니다.`}</div><div className="auto-save-gauge" aria-hidden="true"><i style={{width:`${Math.max(0,Math.min(100,((30-autoSaveSeconds)/30)*100))}%`}}/></div></div>}{game.category==='record'?<button className="primary result-save-button" onClick={requestSave} disabled={saving}><Save/>{saving?'저장 중...':'기록 앱에 저장'}</button>:<button className="primary result-save-button" onClick={reset}><Play/> 새 경기 시작</button>}<div className="result-sub-actions"><button onClick={()=>{saveLockRef.current=false;setSaving(false);setSavePopupOpen(false);setSavePopupSeconds(5);setScreen('play')}}>경기로 돌아가기</button><button onClick={reset}>새 경기 시작</button></div></div></section>}
   {screen==='saved'&&<section className="saved"><div className="check">✓</div><h1>경기가 저장되었습니다!</h1><p>CAROM AVG 기록 앱에 경기 결과가 반영되었습니다.</p><button className="primary" onClick={reset}>새 경기 시작</button></section>}
+  {signupOpen&&<div className="utility-overlay" role="dialog" aria-modal="true"><form className="signup-panel" onSubmit={submitSignup}><button type="button" className="utility-close" onClick={()=>setSignupOpen(false)}><X/></button><UserPlus className="utility-hero-icon"/><h2>회원가입</h2><p>로그인 계정과 경기용 선수정보를 등록합니다.</p><div className="signup-fields"><input value={signupForm.name} onChange={e=>setSignupForm(v=>({...v,name:e.target.value}))} placeholder="이름"/><input value={signupForm.nickname} onChange={e=>setSignupForm(v=>({...v,nickname:e.target.value}))} placeholder="닉네임"/><input value={signupForm.handicap} onChange={e=>setSignupForm(v=>({...v,handicap:e.target.value.replace(/\D/g,'')}))} placeholder="핸디" inputMode="numeric"/><input value={signupForm.email} onChange={e=>setSignupForm(v=>({...v,email:e.target.value}))} placeholder="이메일" type="email"/><input value={signupForm.password} onChange={e=>setSignupForm(v=>({...v,password:e.target.value}))} placeholder="비밀번호 6자 이상" type="password"/></div>{signupMessage&&<div className="signup-message">{signupMessage}</div>}<button className="primary utility-submit" disabled={signupBusy}>{signupBusy?'가입 중...':'회원가입'}</button></form></div>}
+  {qrOpen&&<div className="utility-overlay" role="dialog" aria-modal="true"><div className="qr-panel"><button type="button" className="utility-close" onClick={()=>setQrOpen(false)}><X/></button><QrCode className="utility-hero-icon"/><h2>CAROM AVG QR코드</h2><p>휴대폰 카메라로 스캔해 앱을 열 수 있습니다.</p><div className="qr-image-box"><img alt="CAROM AVG QR" src={`https://quickchart.io/qr?size=280&text=${encodeURIComponent(window.location.href)}`}/></div><button type="button" className="qr-copy" onClick={async()=>{await navigator.clipboard?.writeText(window.location.href);setCopied(true);setTimeout(()=>setCopied(false),1600)}}>{copied?<Check/>:<Copy/>}{copied?'복사 완료':'주소 복사'}</button></div></div>}
   {exitConfirmOpen&&<div className="exit-confirm-overlay" role="dialog" aria-modal="true" aria-label="경기 나가기 확인"><div className="exit-confirm-popup"><div className="exit-confirm-icon">!</div><h2>경기를 나가시겠습니까?</h2><p>진행 중인 경기 내용은 기기에 유지되며, 나중에 다시 불러올 수 있습니다.</p><div className="exit-confirm-actions"><button type="button" onClick={()=>setExitConfirmOpen(false)}>취소</button><button type="button" className="danger" onClick={confirmExit}>경기 나가기</button></div></div></div>}
   {savePopupOpen&&<div className="save-confirm-overlay" role="dialog" aria-modal="true" aria-label="경기 저장 확인"><div className="save-confirm-popup"><div className="save-confirm-icon"><Save/></div><h2>경기 기록을 저장합니다</h2><p><strong>{savePopupSeconds}초</strong> 후 자동으로 저장됩니다.</p><div className="save-confirm-progress"><i style={{width:`${((5-savePopupSeconds)/5)*100}%`}}/></div><div className="save-confirm-actions"><button type="button" onClick={cancelSavePopup}>취소</button><button type="button" className="primary" onClick={()=>{setSavePopupOpen(false);saveNow()}}>지금 저장</button></div></div></div>}
   {pickerIndex!==null&&<PlayerPicker players={players} selectedIds={game.players.map(p=>String(p.playerId||''))} currentId={String(game.players[pickerIndex]?.playerId||'')} onSelect={id=>setPlayer(pickerIndex,id)} onClose={()=>setPickerIndex(null)}/>}
