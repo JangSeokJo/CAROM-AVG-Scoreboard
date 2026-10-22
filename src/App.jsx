@@ -26,6 +26,7 @@ export default function App(){
  const [pickerIndex,setPickerIndex]=useState(null);
  const [autoSaveSeconds,setAutoSaveSeconds]=useState(30);
  const [saving,setSaving]=useState(false);
+ const [savedSeconds,setSavedSeconds]=useState(5);
  const saveLockRef=useRef(false);
 
  useEffect(()=>{localStorage.setItem('carom-score-live',JSON.stringify(game))},[game]);
@@ -105,7 +106,7 @@ export default function App(){
   const payload={date:game.date,p1:a.name,ball1:a.ball,score1:a.score,hr1:a.hr,p2:b.name,ball2:b.ball,score2:b.score,hr2:b.hr,innings:game.inning};
   const {error}=await supabase.from('matches').insert(payload);
   if(error){saveLockRef.current=false;setSaving(false);setNotice(`저장 실패: ${error.message}`);return}
-  localStorage.removeItem('carom-score-live');setSaving(false);setScreen('saved');
+  localStorage.removeItem('carom-score-live');setSaving(false);setSavedSeconds(5);setScreen('saved');
  }
  useEffect(()=>{
   if(screen!=='result'||game.category!=='record'||game.mode!=='single'||saving)return;
@@ -113,7 +114,18 @@ export default function App(){
   const intervalId=window.setInterval(()=>setAutoSaveSeconds(value=>{if(value<=1){window.clearInterval(intervalId);window.setTimeout(()=>save(),0);return 0}return value-1}),1000);
   return()=>window.clearInterval(intervalId);
  },[screen,game.category,game.mode,saving]);
- function reset(){saveLockRef.current=false;setSaving(false);setAutoSaveSeconds(30);localStorage.removeItem('carom-score-live');setGame(INITIAL);setScreen('start');setNotice('')}
+ useEffect(()=>{
+  if(screen!=='saved')return;
+  setSavedSeconds(5);
+  const intervalId=window.setInterval(()=>{
+   setSavedSeconds(value=>{
+    if(value<=1){window.clearInterval(intervalId);window.setTimeout(()=>reset(),0);return 0}
+    return value-1;
+   });
+  },1000);
+  return()=>window.clearInterval(intervalId);
+ },[screen]);
+ function reset(){saveLockRef.current=false;setSaving(false);setAutoSaveSeconds(30);setSavedSeconds(5);localStorage.removeItem('carom-score-live');setGame(INITIAL);setScreen('start');setNotice('')}
  const winner=useMemo(()=>game.players.reduce((best,p)=>!best||p.score>best.score?p:best,null),[game.players]);
  const headToHead=useMemo(()=>{if(game.players.length<2||!game.players[0].name||!game.players[1].name)return null;const [a,b]=game.players;let aw=0,bw=0,total=0,ap=0,bp=0,ai=0,bi=0,ahr=0,bhr=0;matchHistory.forEach(m=>{const d=m.p1===a.name&&m.p2===b.name,r=m.p1===b.name&&m.p2===a.name;if(!d&&!r)return;total++;const as=Number(d?m.score1:m.score2)||0,bs=Number(d?m.score2:m.score1)||0,inn=Number(m.innings)||0;ap+=as;bp+=bs;ai+=inn;bi+=inn;ahr=Math.max(ahr,Number(d?m.hr1:m.hr2)||0);bhr=Math.max(bhr,Number(d?m.hr2:m.hr1)||0);if(as>bs)aw++;else if(bs>as)bw++});if(screen==='result'){total++;ap+=a.score;bp+=b.score;ai+=game.inning;bi+=game.inning;ahr=Math.max(ahr,a.hr);bhr=Math.max(bhr,b.hr);if(a.score>b.score)aw++;else if(b.score>a.score)bw++}return {total,aw,bw,aAvg:ai?(ap/ai).toFixed(3):'-',bAvg:bi?(bp/bi).toFixed(3):'-',ahr,bhr}},[matchHistory,game.players,game.inning,screen]);
 
@@ -157,7 +169,7 @@ export default function App(){
    </div>{game.category==='record'&&game.mode==='single'&&<div className="timer-setup"><div><b>턴 타이머</b><span>선수 차례마다 적용할 시간을 선택하세요.</span></div><div className="timer-presets">{[30,35,40,45].map(sec=><button key={sec} className={timerPreset===sec?'active':''} onClick={()=>setTimerPreset(sec)}>{sec}초</button>)}<button className={timerPreset==='custom'?'active':''} onClick={()=>setTimerPreset('custom')}>기타 설정</button></div>{timerPreset==='custom'&&<label className="custom-timer"><input type="number" min="5" max="300" value={customTimer} onChange={e=>setCustomTimer(e.target.value)} placeholder="초 입력"/><span>초</span><small>5초부터 300초까지 입력할 수 있습니다.</small></label>}</div>}<div className="setup-footer"><button onClick={()=>setScreen('mode')}>이전</button><button className="primary" onClick={start}>경기 시작</button></div></section>}
   {screen==='play'&&<Scoreboard game={game} onScore={score} onUndo={undo} onPassTurn={passTurn} onFinish={finish} onExit={()=>{if(window.confirm('경기를 나가시겠습니까? 진행 중인 경기 내용은 기기에 유지됩니다.'))setScreen('start')}} avg={avg}/>}
   {screen==='result'&&<section className="result"><h1>경기 결과를 확인하세요</h1><div className={`result-grid ${game.mode==='multi'?'multi-result':''}`}>{game.players.map((p,i)=><article key={i}><div className={`ball ${p.ball}`}></div><h2>{p.name}</h2><strong>{p.score}</strong><span>{p===winner?'1위':game.mode==='single'?'패':'-'}</span><p>{game.mode==='single'?`AVG ${avg(p)} · HR ${p.hr}`:`최종 점수 ${p.score}`}</p></article>)}</div>{headToHead&&<div className="result-h2h-live"><b>이번 경기 포함 상대전적</b><span>{game.players[0]?.name} {headToHead.aw}승 · AVG {headToHead.aAvg} · HR {headToHead.ahr}</span><i>VS</i><span>{game.players[1]?.name} {headToHead.bw}승 · AVG {headToHead.bAvg} · HR {headToHead.bhr}</span></div>}<div className="result-meta"><b>{game.mode==='multi'?`총 ${game.inning}라운드`:`전체 이닝 ${game.inning}`}</b><span>{game.category==='record'?'노란공 패배 시 기록 앱 계산에서 1이닝이 자동 차감됩니다.':'빠른 시작 경기는 기록 앱에 저장되지 않습니다.'}</span></div><div className="result-actions">{game.category==='record'&&<div className="auto-save-guide">{saving?'기록을 저장하고 있습니다...':`${autoSaveSeconds}초 후 자동 저장됩니다.`}</div>}{game.category==='record'?<button className="primary result-save-button" onClick={save} disabled={saving}><Save/>{saving?'저장 중...':'기록 앱에 저장'}</button>:<button className="primary result-save-button" onClick={reset}><Play/> 새 경기 시작</button>}<div className="result-sub-actions"><button onClick={()=>{saveLockRef.current=false;setSaving(false);setScreen('play')}}>경기로 돌아가기</button><button onClick={reset}>새 경기 시작</button></div></div></section>}
-  {screen==='saved'&&<section className="saved"><div className="check">✓</div><h1>경기가 저장되었습니다!</h1><p>CAROM AVG 기록 앱에 경기 결과가 반영되었습니다.</p><button className="primary" onClick={reset}>새 경기 시작</button></section>}
+  {screen==='saved'&&<section className="saved"><div className="saved-popup" role="status" aria-live="polite"><div className="check">✓</div><h1>경기가 저장되었습니다!</h1><p>CAROM AVG 기록 앱에 경기 결과가 반영되었습니다.</p><strong className="saved-countdown">{savedSeconds}초 후 시작 화면으로 이동합니다.</strong><button className="primary" onClick={reset}>바로 이동</button></div></section>}
   {pickerIndex!==null&&<PlayerPicker players={players} selectedIds={game.players.map(p=>String(p.playerId||''))} currentId={String(game.players[pickerIndex]?.playerId||'')} onSelect={id=>setPlayer(pickerIndex,id)} onClose={()=>setPickerIndex(null)}/>}
  </div></div>
 }

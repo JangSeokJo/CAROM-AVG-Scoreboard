@@ -216,49 +216,5 @@ button:disabled{cursor:not-allowed}
 .scoreboard-screen.quick-single .turn-score-box{display:none!important}
 
 
-/* STABLE VERSION PATCH: SHARPNESS + FAST TOUCH (original colors preserved) */
-.scoreboard-screen,.multi-score-screen{
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-/* Remove haze-producing filters and broad glows without changing the palette. */
-.sb-camera,.quick-camera,.quick-control-center,.game-clock,.segment-timer{
-  filter:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-}
-.sb-player.active{
-  box-shadow:0 0 0 clamp(3px,.22vw,5px) #35aaf2,0 5px 13px rgba(0,0,0,.2)!important;
-}
-.sb-player.yellow.active{
-  box-shadow:0 0 0 clamp(3px,.22vw,5px) #d6b31f,0 5px 13px rgba(0,0,0,.2)!important;
-}
-.sb-player.inactive{opacity:.9!important;filter:none!important}
-/* Reduce blue cast from translucent white controls while preserving their original look. */
-.quick-adjust button{background:rgba(255,255,255,.97)!important}
-.quick-points button{background:rgba(255,255,255,.96)!important}
-.multi-main-adjust button,.multi-quick-points button{background:rgba(255,255,255,.97)!important}
-/* Crisp text edges. */
-.sb-player h2,.sb-score,.quick-player-card header b,.quick-score-tap>strong,
-.segment-seconds strong,.game-clock b{text-shadow:none!important}
-.sb-player em{color:#355d7b!important}
-/* Faster touch delivery and immediate press feedback; original button colors remain intact. */
-.scoreboard-screen button,.multi-score-screen button,.score-tap,.quick-score-tap{
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-  -webkit-touch-callout:none;
-  user-select:none;
-  -webkit-user-select:none;
-}
-.scoreboard-screen button,.multi-score-screen button{
-  transition:transform .04s ease,filter .04s ease!important;
-}
-.scoreboard-screen button:not(:disabled):active,.multi-score-screen button:not(:disabled):active,
-.score-tap:active,.quick-score-tap:active{
-  transform:scale(.975)!important;
-  filter:brightness(.95) contrast(1.03)!important;
-}
-@media(pointer:coarse){
-  .score-adjust button,.raised-buttons button,.quick-adjust button,.quick-points button,
-  .multi-main-adjust button,.multi-quick-points button{min-height:48px!important}
-}
+/* BACKGROUND ONLY: neutral canvas; all original button/card colors remain unchanged */
+.scoreboard-screen,.multi-score-screen,.quick-multi{background:#f2f3f5!important}

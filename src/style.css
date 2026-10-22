@@ -229,3 +229,22 @@
   .result-meta{margin:4px 0}
   .result-actions{grid-template-rows:auto clamp(58px,5.6vw,78px) 40px;gap:6px;padding-top:5px}
 }
+
+
+/* BACKGROUND ONLY: remove broad blue cast without changing any button colors */
+html,body,#root{background:#f2f3f5!important}
+.app,.stage,.setup,.result,.saved{background:#f2f3f5!important}
+.setup,.result,.saved{color:#101214!important}
+/* Preserve card and button colors from the original stylesheet. */
+.saved-popup{
+  min-width:min(560px,82vw);
+  padding:clamp(24px,3vw,48px);
+  border:1px solid #d2d5da;
+  border-radius:clamp(16px,1.3vw,24px);
+  background:#fff;
+  color:#101214;
+  text-align:center;
+  box-shadow:0 12px 34px rgba(0,0,0,.18);
+}
+.saved-popup p{color:#5f6670!important}
+.saved-countdown{display:block;margin:clamp(12px,1vw,18px) 0;color:#30353b;font-size:clamp(13px,1vw,18px)}
